@@ -8,7 +8,7 @@ Software per generare automaticamente disposizioni dei posti in classe.
 
 Software for automatically generating classroom seating arrangements.
 
-########################################################################
+#########################################################################
 
 # IT Italiano
 
