@@ -34,6 +34,8 @@ Il progetto nasce per rendere più semplice il lavoro dei docenti quando devono 
 - Cronologia delle disposizioni generate (Indietro/Avanti)
 
 ## Versione web 2D
+### Come fare
+**Scarica il file dalla cartella html e aprilo con il tuo Web Browser**
 
 ## Versione Python con interfaccia desktop (in sviluppo)
 
