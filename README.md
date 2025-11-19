@@ -13,7 +13,9 @@ Software per generare automaticamente disposizioni dei posti in classe.
 CSP is a tool designed for school teachers to simplify the creation of classroom seating plans.
 
 --Description
+
 It allows you to:
+
 automatically generate student seating arrangements
 manage forbidden pairs (students who must not sit near each other)
 manage required proximities
@@ -25,6 +27,7 @@ use a simple and intuitive interface
 The project was created to make teachers’ work easier when organizing a balanced and calm classroom environment.
 
 --Main Features
+
 Random generation based on educational criteria
 Ability to lock specific students to fixed seats
 Management of incompatible student pairs
@@ -38,7 +41,9 @@ Navigation through previously generated layouts (Back/Forward)
 IT Italiano
 
 --Descrizione
+
 CSP PostiClasse è uno strumento progettato per docenti della scuola che permette di:
+
 generare automaticamente disposizioni degli studenti
 gestire coppie vietate (studenti che non devono stare vicini)
 gestire vicinanze obbligatorie
@@ -49,6 +54,7 @@ utilizzare un’interfaccia semplice e immediata
 Il progetto nasce per rendere più semplice il lavoro dei docenti quando devono organizzare la classe in modo equilibrato e sereno.
 
 --Funzionalità principali
+
 Generazione casuale con criteri didattici
 Possibilità di bloccare certi studenti a posti fissi
 Gestione delle incompatibilità
@@ -56,6 +62,7 @@ Gestione dei gruppi o vicinanze forzate
 Cronologia delle disposizioni generate (Indietro/Avanti)
 
 --Versione web 2D
+
 --Versione Python con interfaccia desktop (in sviluppo)
 
 
