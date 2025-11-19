@@ -8,6 +8,7 @@ Software for automatically generating classroom seating arrangements.
 Software per generare automaticamente disposizioni dei posti in classe.
 
 ############################################################
+
 **EN English
 
 CSP is a tool designed for school teachers to simplify the creation of classroom seating plans.
@@ -38,6 +39,7 @@ Navigation through previously generated layouts (Back/Forward)
 --Python desktop version (in development)
 
 ############################################################
+
 IT Italiano
 
 --Descrizione
