@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Disposizione posti in classe – versione web 2D</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      max-width: 1200px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 1.2rem;
+    }
+    label {
+      font-weight: bold;
+    }
+    textarea, input[type="number"], input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: monospace;
+      font-size: 0.95rem;
+      padding: 6px;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-top: 5px;
+      margin-right: 5px;
+    }
+    button.secondary {
+      background-color: #1976D2;
+    }
+    button.danger {
+      background-color: #F57C00;
+    }
+    button:hover {
+      filter: brightness(0.95);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .small-note {
+      font-size: 0.8rem;
+      color: #555;
+    }
+    .output-box {
+      margin-top: 8px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      white-space: pre;
+      font-family: monospace;
+      font-size: 0.9rem;
+      max-height: 200px;
+      overflow: auto;
+    }
+    .flex-row {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    #messages {
+      margin-top: 10px;
+      min-height: 1.2em;
+    }
+    .error {
+      color: #b00020;
+      font-weight: bold;
+    }
+    .warning {
+      color: #e67e00;
+      font-weight: bold;
+    }
+    .ok {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+
+    /* Mappa 2D dei banchi */
+    #seatContainer {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #fafafa;
+    }
+    .seat-row {
+      display: flex;
+      flex-wrap: nowrap;
+      margin-bottom: 10px;
+    }
+    .seat-group-gap {
+      width: 20px; /* spazio tra gruppi non adiacenti */
+    }
+    .seat {
+      min-width: 70px;
+      max-width: 120px;
+      min-height: 55px;
+      margin-right: 4px;
+      padding: 4px;
+      border-radius: 6px;
+      border: 2px solid #000;
+      box-sizing: border-box;
+      background-color: #E0F7FA;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.8rem;
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+    .seat.empty {
+      background-color: #eee;
+    }
+    .seat.selected {
+      border-color: #FF0000;
+      box-shadow: 0 0 0 2px rgba(255,0,0,0.4);
+    }
+    .seat .seat-index {
+      font-size: 0.7rem;
+      align-self: flex-start;
+      margin-bottom: 2px;
+      color: #555;
+    }
+    .seat .seat-label {
+      font-size: 0.8rem;
+      white-space: normal;
+      line-height: 1.1;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Disposizione posti in classe – versione web 2D</h1>
+<p class="small-note">
+Disposizione dei banchi in 2D
+</p>
+
+<h2>Input</h2>
+
+<div class="flex-row">
+  <div style="flex: 1 1 50%;">
+    <label for="numStudents">Numero di alunni:</label>
+    <input type="number" id="numStudents" value="19" min="1">
+
+    <label for="layout">Layout dei banchi:</label>
+    <div class="small-note">
+      Ogni fila separata da <code>;</code> oppure da a capo.<br>
+      Ogni gruppo di banchi adiacenti con <code>-</code>.<br>
+      Esempio: <code>2-3; 2-3-2; 2-3-2</code>
+    </div>
+    <textarea id="layout" rows="3">2-3; 2-3-2; 2-3-2</textarea>
+
+    <label for="antipatie">Coppie non permesse:</label>
+    <div class="small-note">Formato: <code>1-2; 5-6; 7-8</code></div>
+    <textarea id="antipatie" rows="2">1-2; 5-6</textarea>
+
+    <label for="vicinanze">Vicinanze obbligatorie:</label>
+    <div class="small-note">
+      Formato: <code>1:3,6; 2:4,5</code> → 1 vicino a 3 o 6, 2 vicino a 4 o 5.
+    </div>
+    <textarea id="vicinanze" rows="2">1:3,6; 2:3,4</textarea>
+
+    <label for="names">Lista alunni (opzionale):</label>
+    <div class="small-note">
+      Un alunno per riga: <code>1 Calmo Tranquilli</code><br>
+      Il numero iniziale deve essere l'ID usato nei vincoli.
+    </div>
+    <textarea id="names" rows="6">1 Calmo Tranquilli
+2 Chiasso Rumori
+3 Serena Pacata
+4 Furio Scattante
+5 Sogno Distratto
+6 Giulia Precisa
+7 Gioia Ridolini
+8 Pio Ordinato
+9 Stella Curiosa
+10 Bruno Silenzio
+11 Marta Puntuale
+12 Leo Chiacchieroni
+13 Nina Creativa
+14 Toto Giocherello
+15 Rita Seria
+16 Paco Sportivo
+17 Vanda Polemica
+18 Lello Dormiglione
+19 Iris Sensibile</textarea>
+
+    <button id="generateBtn">Genera disposizione</button>
+    <button id="resetSelectionBtn" class="secondary">Annulla selezione</button>
+    <button id="prevDispositionBtn" class="secondary">← Disposizione precedente</button>
+    <button id="nextDispositionBtn" class="secondary">Disposizione successiva →</button>
+    <button id="exportTextBtn" class="secondary">Esporta tutto (testo)</button>
+    <button id="importTextBtn" class="secondary">Importa da file (testo)</button>
+    <input type="file" id="fileInput" style="display:none">
+  </div>
+
+  <div style="flex: 1 1 50%;">
+    <h2>Stato vincoli</h2>
+    <div id="messages"></div>
+
+    <h2>Output numerico (per righe/gruppi)</h2>
+    <div id="outputNumeric" class="output-box">(ancora nessuna disposizione)</div>
+
+    <h2>Output con nomi (per righe/gruppi)</h2>
+    <div id="outputNames" class="output-box">(ancora nessuna disposizione)</div>
+  </div>
+</div>
+
+<h2>Anteprima 2D della classe</h2>
+<p class="small-note">
+Clicca su due banchi per scambiare i posti. Dopo ogni scambio i vincoli vengono ricontrollati.
+</p>
+<div id="seatContainer"></div>
+
+<script>
+  // ================== PARSING ==================
+
+  function parseLayout(text) {
+    text = text.trim();
+    if (!text) throw new Error("Il layout dei banchi non può essere vuoto.");
+    text = text.replace(/\n/g, ";");
+    const parts = text.split(";").map(s => s.trim()).filter(s => s.length > 0);
+
+    const layout = [];
+    for (const rowStr of parts) {
+      const groups = [];
+      const groupParts = rowStr.split("-");
+      for (const gStr of groupParts) {
+        const trimmed = gStr.trim();
+        if (!trimmed) continue;
+        const val = parseInt(trimmed, 10);
+        if (Number.isNaN(val) || val <= 0) {
+          throw new Error("Ogni gruppo di banchi deve essere un intero positivo. Errore in: '" + rowStr + "'");
+        }
+        groups.push(val);
+      }
+      if (groups.length === 0) {
+        throw new Error("Riga layout non valida: '" + rowStr + "'");
+      }
+      layout.push(groups);
+    }
+    return layout;
+  }
+
+  function parseAntipatie(text) {
+    text = text.trim();
+    if (!text) return [];
+    const pairs = [];
+    const parts = text.replace(/\n/g, " ").split(";");
+    for (let p of parts) {
+      p = p.trim();
+      if (!p) continue;
+      if (!p.includes("-")) {
+        throw new Error("Formato non valido per antipatia: '" + p + "' (usa es. 1-2)");
+      }
+      const [aStr, bStr] = p.split("-");
+      const a = parseInt(aStr.trim(), 10);
+      const b = parseInt(bStr.trim(), 10);
+      if (Number.isNaN(a) || Number.isNaN(b)) {
+        throw new Error("Numeri non validi in antipatia: '" + p + "'");
+      }
+      pairs.push([a, b]);
+    }
+    return pairs;
+  }
+
+  function parseVicinanze(text) {
+    text = text.trim();
+    if (!text) return {};
+    const res = {};
+    const parts = text.replace(/\n/g, " ").split(";");
+    for (let g of parts) {
+      g = g.trim();
+      if (!g) continue;
+      if (!g.includes(":")) {
+        throw new Error("Formato non valido per vicinanza: '" + g + "' (usa es. 1:3,6)");
+      }
+      const [sStr, vicStr] = g.split(":");
+      const s = parseInt(sStr.trim(), 10);
+      if (Number.isNaN(s)) {
+        throw new Error("ID studente non valido in vicinanza: '" + g + "'");
+      }
+      const neighbors = [];
+      for (let vPart of vicStr.split(",")) {
+        const v = parseInt(vPart.trim(), 10);
+        if (!Number.isNaN(v)) neighbors.push(v);
+      }
+      if (neighbors.length === 0) {
+        throw new Error("Nessun vicino valido per lo studente " + s + " in '" + g + "'");
+      }
+      res[s] = neighbors;
+    }
+    return res;
+  }
+
+  // ⬇⬇⬇ QUI la parseNames che prende cognome+nome per intero ⬇⬇⬇
+  function parseNames(text) {
+    text = text.trim();
+    if (!text) return {};
+    const result = {};
+    const lines = text.split(/\r?\n/);
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue;
+
+      // numero iniziale + tutto il resto della riga
+      const match = line.match(/^(\d+)\s+(.*)$/);
+      if (!match) {
+        throw new Error("Riga lista alunni non valida: '" + line + "' (usa es. 1 Calmo Tranquilli)");
+      }
+
+      const num = parseInt(match[1], 10);
+      const name = match[2].trim(); // es. "Calmo Tranquilli"
+
+      if (Number.isNaN(num)) {
+        throw new Error("Numero alunno non valido in riga: '" + line + "'");
+      }
+      if (!name) {
+        throw new Error("Nome mancante per lo studente " + num + " nella riga: '" + line + "'");
+      }
+
+      result[num] = name;
+    }
+    return result;
+  }
+
+  // ================== LOGICA VINCOLI ==================
+
+  function inAntipatia(s1, s2, antipatie) {
+    for (const [a, b] of antipatie) {
+      if ((a === s1 && b === s2) || (a === s2 && b === s1)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function costruisciAdiacenze(layout) {
+    const numPosti = layout.reduce(
+      (acc, row) => acc + row.reduce((a, g) => a + g, 0),
+      0
+    );
+    const adjacencyPairs = [];
+    const adjacencyByIndex = {};
+    for (let i = 0; i < numPosti; i++) adjacencyByIndex[i] = [];
+
+    let index = 0;
+    for (const row of layout) {
+      for (const gruppo of row) {
+        const groupIndices = [];
+        for (let j = 0; j < gruppo; j++) {
+          groupIndices.push(index + j);
+        }
+        for (let k = 0; k < groupIndices.length - 1; k++) {
+          const i1 = groupIndices[k];
+          const i2 = groupIndices[k + 1];
+          adjacencyPairs.push([i1, i2]);
+          adjacencyByIndex[i1].push(i2);
+          adjacencyByIndex[i2].push(i1);
+        }
+        index += gruppo;
+      }
+    }
+    return { numPosti, adjacencyPairs, adjacencyByIndex };
+  }
+
+  function nessunaAntipatia2D(posti, adjacencyPairs, antipatie) {
+    for (const [i, j] of adjacencyPairs) {
+      const s1 = posti[i];
+      const s2 = posti[j];
+      if (s1 === 0 || s2 === 0) continue;
+      if (inAntipatia(s1, s2, antipatie)) return false;
+    }
+    return true;
+  }
+
+  function soddisfaVicinanze2D(posti, adjacencyByIndex, vicinanze) {
+    const pos = {};
+    posti.forEach((stud, idx) => {
+      if (stud !== 0) pos[stud] = idx;
+    });
+
+    for (const sStr in vicinanze) {
+      const s = parseInt(sStr, 10);
+      if (!(s in pos)) return false;
+      const idx = pos[s];
+      const possibili = vicinanze[s];
+      const neighbors = adjacencyByIndex[idx]
+        .map(j => posti[j])
+        .filter(v => v !== 0);
+
+      let ok = false;
+      for (const v of neighbors) {
+        if (possibili.includes(v)) {
+          ok = true;
+          break;
+        }
+      }
+      if (!ok) return false;
+    }
+    return true;
+  }
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function generaDisposizione2D(n, layout, antipatie, vicinanze, maxTentativi = 100000) {
+    const { numPosti, adjacencyPairs, adjacencyByIndex } = costruisciAdiacenze(layout);
+    if (numPosti < n) {
+      throw new Error("Ci sono solo " + numPosti + " posti ma " + n + " studenti.");
+    }
+    const posti = [];
+    for (let i = 1; i <= n; i++) posti.push(i);
+    for (let i = 0; i < numPosti - n; i++) posti.push(0);
+
+    for (let t = 0; t < maxTentativi; t++) {
+      shuffleArray(posti);
+      if (nessunaAntipatia2D(posti, adjacencyPairs, antipatie) &&
+          soddisfaVicinanze2D(posti, adjacencyByIndex, vicinanze)) {
+        return { posti: posti.slice(), numPosti, adjacencyPairs, adjacencyByIndex };
+      }
+    }
+    return null;
+  }
+
+  // ================== FORMATTAZIONE DISPOSIZIONE ==================
+
+  function formatDispositionNumeric(posti, layout) {
+    let idx = 0;
+    const lines = [];
+    for (const row of layout) {
+      const pieces = [];
+      for (const gruppo of row) {
+        const blocco = [];
+        for (let k = 0; k < gruppo; k++) {
+          const s = posti[idx++];
+          blocco.push(s === 0 ? " ." : s.toString().padStart(2, " "));
+        }
+        pieces.push(blocco.join(" "));
+      }
+      lines.push(pieces.join("  ||  "));
+    }
+    return lines.join("\n");
+  }
+
+  function formatDispositionNames(posti, layout, namesMap) {
+    let idx = 0;
+    const lines = [];
+    for (const row of layout) {
+      const pieces = [];
+      for (const gruppo of row) {
+        const blocco = [];
+        for (let k = 0; k < gruppo; k++) {
+          const s = posti[idx++];
+          if (s === 0) {
+            blocco.push(" . ");
+          } else {
+            const nome = namesMap[s] || s.toString();
+            blocco.push(s + " " + nome); // es: "1 Calmo Tranquilli"
+          }
+        }
+        pieces.push(blocco.join(" | "));
+      }
+      lines.push(pieces.join("  ||  "));
+    }
+    return lines.join("\n");
+  }
+
+  // ================== STATO GLOBALE ==================
+
+  let lastPosti = null;
+  let lastLayout = null;
+  let lastAdjacencyPairs = null;
+  let lastAdjacencyByIndex = null;
+  let lastAntipatie = [];
+  let lastVicinanze = {};
+  let lastNamesMap = {};
+  let selectedSeatIndex = null; // per scambi manuali
+
+  // Storico disposizioni
+  let history = [];
+  let historyIndex = -1;
+
+  function cloneVicinanze(v) {
+    const res = {};
+    for (const k in v) {
+      if (Object.prototype.hasOwnProperty.call(v, k)) {
+        res[k] = v[k].slice();
+      }
+    }
+    return res;
+  }
+
+  function pushHistorySnapshot() {
+    if (!lastPosti || !lastLayout) return;
+    const snapshot = {
+      posti: lastPosti.slice(),
+      layout: lastLayout.map(row => row.slice()),
+      antipatie: lastAntipatie.map(p => p.slice()),
+      vicinanze: cloneVicinanze(lastVicinanze),
+      namesMap: { ...lastNamesMap }
+    };
+    if (historyIndex < history.length - 1) {
+      history = history.slice(0, historyIndex + 1);
+    }
+    history.push(snapshot);
+    historyIndex = history.length - 1;
+    updateHistoryButtons();
+  }
+
+  function applySnapshot(snapshot) {
+    lastPosti = snapshot.posti.slice();
+    lastLayout = snapshot.layout.map(row => row.slice());
+    lastAntipatie = snapshot.antipatie.map(p => p.slice());
+    lastVicinanze = cloneVicinanze(snapshot.vicinanze);
+    lastNamesMap = { ...snapshot.namesMap };
+
+    const { adjacencyPairs, adjacencyByIndex } = costruisciAdiacenze(lastLayout);
+    lastAdjacencyPairs = adjacencyPairs;
+    lastAdjacencyByIndex = adjacencyByIndex;
+    selectedSeatIndex = null;
+
+    const outNum = document.getElementById("outputNumeric");
+    const outNames = document.getElementById("outputNames");
+    outNum.textContent = formatDispositionNumeric(lastPosti, lastLayout);
+    outNames.textContent = formatDispositionNames(lastPosti, lastLayout, lastNamesMap);
+
+    renderSeats2D();
+    validateCurrentArrangement();
+    updateHistoryButtons();
+  }
+
+  function updateHistoryButtons() {
+    const prevBtn = document.getElementById("prevDispositionBtn");
+    const nextBtn = document.getElementById("nextDispositionBtn");
+    if (!prevBtn || !nextBtn) return;
+    prevBtn.disabled = !(historyIndex > 0);
+    nextBtn.disabled = !(historyIndex >= 0 && historyIndex < history.length - 1);
+  }
+
+  // ================== RENDER 2D ==================
+
+  function renderSeats2D() {
+    const container = document.getElementById("seatContainer");
+    container.innerHTML = "";
+    if (!lastPosti || !lastLayout) return;
+
+    let idx = 0;
+    let seatIndexGlobal = 1;
+
+    for (let r = 0; r < lastLayout.length; r++) {
+      const rowGroups = lastLayout[r];
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "seat-row";
+
+      rowGroups.forEach((groupSize, gIdx) => {
+        for (let k = 0; k < groupSize; k++) {
+          if (idx >= lastPosti.length) break;
+          const studId = lastPosti[idx];
+
+          const seatDiv = document.createElement("div");
+          seatDiv.className = "seat" + (studId === 0 ? " empty" : "");
+          if (selectedSeatIndex === idx) {
+            seatDiv.classList.add("selected");
+          }
+          seatDiv.dataset.index = idx.toString();
+
+          const indexSpan = document.createElement("div");
+          indexSpan.className = "seat-index";
+          indexSpan.textContent = "#" + seatIndexGlobal;
+
+          const labelSpan = document.createElement("div");
+          labelSpan.className = "seat-label";
+
+          if (studId === 0) {
+            labelSpan.textContent = ".";
+          } else {
+            const nome = lastNamesMap[studId];
+            if (nome) {
+              // numero su prima riga, cognome+nome per intero sotto
+              labelSpan.innerHTML = "<strong>" + studId + "</strong><br>" + nome;
+            } else {
+              labelSpan.textContent = String(studId);
+            }
+          }
+
+          seatDiv.appendChild(indexSpan);
+          seatDiv.appendChild(labelSpan);
+          seatDiv.addEventListener("click", onSeatClick);
+
+          rowDiv.appendChild(seatDiv);
+
+          idx++;
+          seatIndexGlobal++;
+        }
+
+        if (gIdx < rowGroups.length - 1) {
+          const gap = document.createElement("div");
+          gap.className = "seat-group-gap";
+          rowDiv.appendChild(gap);
+        }
+      });
+
+      container.appendChild(rowDiv);
+    }
+  }
+
+  // ================== VALIDAZIONE STATO ATTUALE ==================
+
+  function validateCurrentArrangement() {
+    const msgDiv = document.getElementById("messages");
+    if (!lastPosti || !lastAdjacencyPairs || !lastAdjacencyByIndex) {
+      msgDiv.innerHTML = "";
+      return;
+    }
+    const okAnt = nessunaAntipatia2D(lastPosti, lastAdjacencyPairs, lastAntipatie);
+    const okVic = soddisfaVicinanze2D(lastPosti, lastAdjacencyByIndex, lastVicinanze);
+
+    if (okAnt && okVic) {
+      msgDiv.innerHTML = "<div class='ok'>✔ Disposizione valida: tutte le antipatie/vicinanze sono rispettate.</div>";
+    } else {
+      let txt = "<div class='warning'>⚠ Disposizione modificata: alcuni vincoli potrebbero non essere rispettati.</div>";
+      txt += "<div class='small-note'>Puoi controllare i vincoli o rigenerare la disposizione.</div>";
+      msgDiv.innerHTML = txt;
+    }
+  }
+
+  // ================== HANDLER CLICK SEAT (SCAMBIO MANUALE) ==================
+
+  function onSeatClick(e) {
+    if (!lastPosti) return;
+    const idx = parseInt(e.currentTarget.dataset.index, 10);
+    if (Number.isNaN(idx)) return;
+
+    if (selectedSeatIndex === null) {
+      selectedSeatIndex = idx;
+    } else if (selectedSeatIndex === idx) {
+      selectedSeatIndex = null;
+    } else {
+      const i = selectedSeatIndex;
+      const j = idx;
+      const tmp = lastPosti[i];
+      lastPosti[i] = lastPosti[j];
+      lastPosti[j] = tmp;
+      selectedSeatIndex = null;
+
+      const outNum = document.getElementById("outputNumeric");
+      const outNames = document.getElementById("outputNames");
+      outNum.textContent = formatDispositionNumeric(lastPosti, lastLayout);
+      outNames.textContent = formatDispositionNames(lastPosti, lastLayout, lastNamesMap);
+    }
+
+    renderSeats2D();
+    validateCurrentArrangement();
+  }
+
+  // ================== EXPORT TESTO (formato .py) ==================
+
+  function buildExportText() {
+    const nStr = document.getElementById("numStudents").value.trim();
+    const antipatieStr = document.getElementById("antipatie").value.trim();
+    const vicinanzeStr = document.getElementById("vicinanze").value.trim();
+    const layoutStr = document.getElementById("layout").value.trim();
+    const listaStr = document.getElementById("names").value.trim();
+
+    let text = "";
+    text += "=== INPUT ===\n\n";
+    text += "Numero di alunni:\n";
+    text += nStr + "\n\n";
+    text += "Coppie non permesse (antipatie):\n";
+    text += antipatieStr + "\n\n";
+    text += "Vicinanze obbligatorie:\n";
+    text += vicinanzeStr + "\n\n";
+    text += "Layout dei banchi:\n";
+    text += layoutStr + "\n\n";
+    text += "Lista alunni:\n";
+    text += listaStr + "\n\n";
+
+    text += "=== OUTPUT NUMERICO ===\n\n";
+    if (lastPosti && lastLayout) {
+      text += formatDispositionNumeric(lastPosti, lastLayout) + "\n\n";
+    } else {
+      text += "Nessuna disposizione generata.\n\n";
+    }
+
+    text += "=== OUTPUT CON NOMI ===\n\n";
+    if (lastPosti && lastLayout) {
+      text += formatDispositionNames(lastPosti, lastLayout, lastNamesMap) + "\n";
+    } else {
+      text += "Nessuna disposizione generata.\n";
+    }
+
+    return text;
+  }
+
+  function exportAllText() {
+    const text = buildExportText();
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "disposizione_classe.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ================== IMPORT TESTO (formato .py) ==================
+
+  function parseOutputDisposition(block, layout) {
+    const text = block.trim();
+    if (!text) return null;
+
+    const expectedPosti = layout.reduce(
+      (acc, row) => acc + row.reduce((a, g) => a + g, 0),
+      0
+    );
+    const posti = [];
+
+    const lines = text.split(/\r?\n/);
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue;
+      line = line.replace(/\|\|/g, " ");
+      const tokens = line.split(/\s+/);
+      for (const tok of tokens) {
+        if (tok === ".") posti.push(0);
+        else {
+          const v = parseInt(tok, 10);
+          if (!isNaN(v)) posti.push(v);
+        }
+      }
+    }
+    if (posti.length < expectedPosti) return null;
+    return posti.slice(0, expectedPosti);
+  }
+
+  function importAllText(content) {
+    function readBlock(label, allLabels, lines) {
+      const idx = lines.indexOf(label);
+      if (idx === -1) return "";
+      const collected = [];
+      for (let i = idx + 1; i < lines.length; i++) {
+        if (allLabels.includes(lines[i])) break;
+        collected.push(lines[i]);
+      }
+      return collected.join("\n").trim();
+    }
+
+    const lines = content.split(/\r?\n/);
+
+    const labels = [
+      "Numero di alunni:",
+      "Coppie non permesse (antipatie):",
+      "Vicinanze obbligatorie:",
+      "Layout dei banchi:",
+      "Lista alunni:",
+      "=== INPUT ===",
+      "=== OUTPUT NUMERICO ===",
+      "=== OUTPUT CON NOMI ==="
+    ];
+
+    const nBlock = readBlock("Numero di alunni:", labels, lines) || "0";
+    const antipatieBlock = readBlock("Coppie non permesse (antipatie):", labels, lines);
+    const vicinanzeBlock = readBlock("Vicinanze obbligatorie:", labels, lines);
+    const layoutBlock = readBlock("Layout dei banchi:", labels, lines);
+    const listaBlock = readBlock("Lista alunni:", labels, lines);
+    const outputNumericoBlock = readBlock("=== OUTPUT NUMERICO ===", labels, lines);
+
+    let nVal = "0";
+    for (const line of nBlock.split(/\r?\n/)) {
+      if (line.trim()) {
+        nVal = line.trim();
+        break;
+      }
+    }
+
+    document.getElementById("numStudents").value = nVal;
+    document.getElementById("antipatie").value = antipatieBlock;
+    document.getElementById("vicinanze").value = vicinanzeBlock;
+    document.getElementById("layout").value = layoutBlock;
+    document.getElementById("names").value = listaBlock;
+
+    lastPosti = null;
+    lastLayout = null;
+    lastNamesMap = {};
+    lastAdjacencyPairs = null;
+    lastAdjacencyByIndex = null;
+    lastAntipatie = [];
+    lastVicinanze = {};
+    selectedSeatIndex = null;
+
+    const outNum = document.getElementById("outputNumeric");
+    const outNames = document.getElementById("outputNames");
+    const msgDiv = document.getElementById("messages");
+    msgDiv.innerHTML = "";
+
+    history = [];
+    historyIndex = -1;
+
+    if (layoutBlock.trim() && outputNumericoBlock.trim()) {
+      try {
+        const layoutParsed = parseLayout(layoutBlock);
+        const dispo = parseOutputDisposition(outputNumericoBlock, layoutParsed);
+        if (dispo) {
+          lastLayout = layoutParsed;
+          lastPosti = dispo;
+
+          try {
+            lastNamesMap = parseNames(listaBlock);
+          } catch (e) {
+            lastNamesMap = {};
+          }
+
+          try {
+            lastAntipatie = parseAntipatie(antipatieBlock);
+          } catch (e) {
+            lastAntipatie = [];
+          }
+
+          try {
+            lastVicinanze = parseVicinanze(vicinanzeBlock);
+          } catch (e) {
+            lastVicinanze = {};
+          }
+
+          const ad = costruisciAdiacenze(layoutParsed);
+          lastAdjacencyPairs = ad.adjacencyPairs;
+          lastAdjacencyByIndex = ad.adjacencyByIndex;
+
+          outNum.textContent = formatDispositionNumeric(lastPosti, lastLayout);
+          outNames.textContent = formatDispositionNames(lastPosti, lastLayout, lastNamesMap);
+
+          renderSeats2D();
+          validateCurrentArrangement();
+          pushHistorySnapshot();
+        }
+      } catch (e) {
+        alert("Input importato. Non sono riuscito a ricostruire la disposizione salvata:\n" + e);
+        outNum.textContent = "(ancora nessuna disposizione)";
+        outNames.textContent = "(ancora nessuna disposizione)";
+        document.getElementById("seatContainer").innerHTML = "";
+      }
+    } else {
+      outNum.textContent = "(ancora nessuna disposizione)";
+      outNames.textContent = "(ancora nessuna disposizione)";
+      document.getElementById("seatContainer").innerHTML = "";
+    }
+  }
+
+  // ================== HANDLER GENERA ==================
+
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    const msgDiv = document.getElementById("messages");
+    const outNum = document.getElementById("outputNumeric");
+    const outNames = document.getElementById("outputNames");
+
+    msgDiv.innerHTML = "";
+    outNum.textContent = "";
+    outNames.textContent = "";
+
+    selectedSeatIndex = null;
+
+    let n;
+    try {
+      n = parseInt(document.getElementById("numStudents").value, 10);
+      if (Number.isNaN(n) || n <= 0) {
+        throw new Error("Numero di alunni non valido.");
+      }
+    } catch (e) {
+      msgDiv.innerHTML = "<div class='error'>" + e.message + "</div>";
+      return;
+    }
+
+    let layout, antipatie, vicinanze, namesMap;
+    try {
+      layout = parseLayout(document.getElementById("layout").value);
+    } catch (e) {
+      msgDiv.innerHTML = "<div class='error'>Errore nel layout: " + e.message + "</div>";
+      return;
+    }
+
+    try {
+      antipatie = parseAntipatie(document.getElementById("antipatie").value);
+    } catch (e) {
+      msgDiv.innerHTML = "<div class='error'>Errore nelle antipatie: " + e.message + "</div>";
+      return;
+    }
+
+    try {
+      vicinanze = parseVicinanze(document.getElementById("vicinanze").value);
+    } catch (e) {
+      msgDiv.innerHTML = "<div class='error'>Errore nelle vicinanze obbligatorie: " + e.message + "</div>";
+      return;
+    }
+
+    try {
+      namesMap = parseNames(document.getElementById("names").value);
+    } catch (e) {
+      msgDiv.innerHTML = "<div class='error'>Errore nella lista alunni: " + e.message + "</div>";
+      return;
+    }
+
+    let result;
+    try {
+      result = generaDisposizione2D(n, layout, antipatie, vicinanze);
+    } catch (e) {
+      msgDiv.innerHTML = "<div class='error'>" + e.message + "</div>";
+      return;
+    }
+
+    if (!result) {
+      outNum.textContent =
+        "Non è stata trovata una disposizione compatibile.\n" +
+        "Riduci i vincoli o modifica il layout dei banchi.";
+      outNames.textContent = "(nessuna disposizione)";
+      msgDiv.innerHTML = "<div class='warning'>Nessuna disposizione trovata entro i tentativi massimi.</div>";
+      return;
+    }
+
+    lastPosti = result.posti;
+    lastLayout = layout;
+    lastAdjacencyPairs = result.adjacencyPairs;
+    lastAdjacencyByIndex = result.adjacencyByIndex;
+    lastAntipatie = antipatie;
+    lastVicinanze = vicinanze;
+    lastNamesMap = namesMap;
+
+    outNum.textContent = formatDispositionNumeric(lastPosti, lastLayout);
+    outNames.textContent = formatDispositionNames(lastPosti, lastLayout, lastNamesMap);
+
+    renderSeats2D();
+    validateCurrentArrangement();
+    pushHistorySnapshot();
+  });
+
+  // ================== HANDLER RESET SELEZIONE ==================
+
+  document.getElementById("resetSelectionBtn").addEventListener("click", () => {
+    selectedSeatIndex = null;
+    renderSeats2D();
+    validateCurrentArrangement();
+  });
+
+  // ================== HANDLER PRECEDENTE / SUCCESSIVA ==================
+
+  document.getElementById("prevDispositionBtn").addEventListener("click", () => {
+    if (historyIndex > 0) {
+      historyIndex--;
+      applySnapshot(history[historyIndex]);
+    }
+  });
+
+  document.getElementById("nextDispositionBtn").addEventListener("click", () => {
+    if (historyIndex >= 0 && historyIndex < history.length - 1) {
+      historyIndex++;
+      applySnapshot(history[historyIndex]);
+    }
+  });
+
+  // ================== HANDLER EXPORT / IMPORT TESTO ==================
+
+  document.getElementById("exportTextBtn").addEventListener("click", () => {
+    exportAllText();
+  });
+
+  document.getElementById("importTextBtn").addEventListener("click", () => {
+    const fileInput = document.getElementById("fileInput");
+    fileInput.value = "";
+    fileInput.click();
+  });
+
+  document.getElementById("fileInput").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        importAllText(reader.result);
+      } catch (err) {
+        alert("Errore durante l'import:\n" + err);
+      }
+    };
+    reader.readAsText(file, "utf-8");
+  });
+
+  updateHistoryButtons();
+</script>
+
+</body>
+</html>
