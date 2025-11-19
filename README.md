@@ -2,11 +2,13 @@
 
 **Author: Lorenzo Antiga** – lorenzo.antiga@gmail.com  
 
-Class seating planner - Disposizione dei posti in classe  
-Software for automatically generating classroom seating arrangements.  
-Software per generare automaticamente disposizioni dei posti in classe.  
+Class seating planner - Disposizione dei posti in classe
 
-########################################################################
+Software per generare automaticamente disposizioni dei posti in classe.
+
+Software for automatically generating classroom seating arrangements.
+
+#########################################################################
 
 # IT Italiano
 
@@ -32,6 +34,8 @@ Il progetto nasce per rendere più semplice il lavoro dei docenti quando devono 
 - Cronologia delle disposizioni generate (Indietro/Avanti)
 
 ## Versione web 2D
+### Come fare
+**Scarica il file dalla cartella html e aprilo con il tuo Web Browser**
 
 ## Versione Python con interfaccia desktop (in sviluppo)
 
