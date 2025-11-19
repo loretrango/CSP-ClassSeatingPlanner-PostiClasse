@@ -1,22 +1,16 @@
 # CSP ClassSeatingPlanner - PostiClasse
-Class seating planner - Disposizione dei posti in classe
-
-Author: Lorenzo Antiga – lorenzo.antiga@gmail.com
-
-Software for automatically generating classroom seating arrangements.
-
-Software per generare automaticamente disposizioni dei posti in classe.
-
-############################################################-
-
-# EN English
-
-CSP is a tool designed for school teachers to simplify the creation of classroom seating plans.
+Class seating planner - Disposizione dei posti in classe  
+Author: Lorenzo Antiga – lorenzo.antiga@gmail.com  
+Software for automatically generating classroom seating arrangements.  
+Software per generare automaticamente disposizioni dei posti in classe.  
+############################################################  
+  
+# EN English  
+CSP is a tool designed for school teachers to simplify the creation of classroom seating plans.  
 
 ## Description
 
-It allows you to:
-
+It allows you to:  
 automatically generate student seating arrangements
 
 manage forbidden pairs (students who must not sit near each other)
