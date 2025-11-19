@@ -9,11 +9,11 @@ Software per generare automaticamente disposizioni dei posti in classe.
 
 ############################################################-
 
-**EN English
+#EN English
 
 CSP is a tool designed for school teachers to simplify the creation of classroom seating plans.
 
---Description
+##Description
 
 It allows you to:
 
@@ -33,7 +33,7 @@ use a simple and intuitive interface
 
 The project was created to make teachers’ work easier when organizing a balanced and calm classroom environment.
 
---Main Features
+##Main Features
 
 Random generation based on educational criteria
 
@@ -45,15 +45,15 @@ Management of required proximities or groups
 
 Navigation through previously generated layouts (Back/Forward)
 
---2D web version
+##2D web version
 
---Python desktop version (in development)
+##Python desktop version (in development)
 
 ############################################################
 
-IT Italiano
+#IT Italiano
 
---Descrizione
+##Descrizione
 
 CSP PostiClasse è uno strumento progettato per docenti della scuola che permette di:
 
@@ -73,7 +73,7 @@ utilizzare un’interfaccia semplice e immediata
 
 Il progetto nasce per rendere più semplice il lavoro dei docenti quando devono organizzare la classe in modo equilibrato e sereno.
 
---Funzionalità principali
+##Funzionalità principali
 
 Generazione casuale con criteri didattici
 
@@ -85,9 +85,9 @@ Gestione dei gruppi o vicinanze forzate
 
 Cronologia delle disposizioni generate (Indietro/Avanti)
 
---Versione web 2D
+##Versione web 2D
 
---Versione Python con interfaccia desktop (in sviluppo)
+##Versione Python con interfaccia desktop (in sviluppo)
 
 
 
