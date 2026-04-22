@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Disposizione posti in classe v6 — Backtracking</title>
+  <style>
+    :root{
+      --bg:#fbfbfc;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#4b5563;
+      --line:#e5e7eb;
+      --ok:#2e7d32;
+      --warn:#e67e00;
+      --btn:#389c22;
+      --btn2:#0f766e;
+      --btn3:#ff9800;
+      --btn-cancel:#dc2626;
+      --radius:12px;
+      --pad:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans)}
+    header{
+      position:sticky;top:0;z-index:10;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:saturate(1.2) blur(6px);
+      border-bottom:1px solid var(--line);
+      padding:12px 16px;
+      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+    }
+    .title{font-weight:800;letter-spacing:.2px}
+    .sub{font-size:14px;color:var(--muted)}
+    .sub a{color:#2563eb;text-decoration:none}
+    main{max-width:1100px;margin:0 auto;padding:16px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:var(--pad);
+    }
+    .stack{display:flex;flex-direction:column;gap:12px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .row > *{flex:1}
+    .row .fit{flex:0 0 auto}
+    h2{margin:0;font-size:16px}
+    label{display:block;margin:0 0 6px 0;font-size:13px;color:var(--muted)}
+    input[type="number"], textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px;
+      background:#fff;
+      outline:none;
+      font-size:14px;
+      color:var(--text);
+    }
+    textarea{
+      min-height:84px;
+      font-family:var(--mono);
+      resize:vertical;
+      white-space:pre;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:var(--btn);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+      white-space:nowrap;
+    }
+    .btn.secondary{background:var(--btn2)}
+    .btn.orange{background:var(--btn3);color:#111827}
+    .btn.cancel{background:var(--btn-cancel)}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .hint{font-size:12px;color:var(--muted)}
+    .divider{height:1px;background:var(--line);margin:4px 0}
+
+    .optionsBlock{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:10px 12px;
+      border:1px dashed var(--line);
+      border-radius:12px;
+      background:#fff;
+    }
+    .chk{
+      display:flex;gap:8px;align-items:flex-start;
+      font-size:13px;color:var(--muted);
+      line-height:1.25;
+    }
+    .chk input{margin-top:2px}
+
+    pre.output{
+      margin:0;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+      overflow:auto;
+      min-height:60px;
+      font-family:var(--mono);
+      font-size:13px;
+      white-space:pre;
+    }
+    .status{font-weight:800;margin-top:8px}
+    .status.ok{color:var(--ok)}
+    .status.warn{color:var(--warn)}
+    .stats{font-size:12px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+
+    .previewWrap{display:flex;flex-direction:column;gap:10px}
+    .preview{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+      overflow:auto;
+      min-height:260px;
+    }
+    .classGrid{display:grid;gap:8px;align-content:start;justify-content:start}
+    .cell{
+      width:92px; min-height:64px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:6px 8px;
+      position:relative;
+      cursor:pointer;
+      user-select:none;
+    }
+    .cell.seat{border:2px solid #111827}
+    .cell.filled{background:#f2fbfd}
+    .cell.zero{background:#f3f4f6;border:1px solid #d1d5db;cursor:not-allowed}
+    .cell.corridor{background:transparent;border:0;cursor:default}
+    .cell.selected{outline:3px solid #ff0000}
+    .cell.warn-anti{background:#fef2f2 !important;border-color:#dc2626 !important}
+    .cell.warn-vic{background:#fff7ed !important;border-color:#f97316 !important}
+    .seatNo{
+      position:absolute; top:6px; left:8px;
+      font-size:11px; color:var(--muted); font-weight:800;
+    }
+    .seatLabel{
+      margin-top:16px;
+      font-size:12px;
+      line-height:1.15;
+      word-break:break-word;
+      color:var(--text);
+    }
+
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .generating{animation:pulse 1.2s ease-in-out infinite}
+
+    @media (max-width: 900px){
+      .twoCol{grid-template-columns:1fr}
+    }
+    @media (max-width: 780px){
+      .row > *{flex:1 1 100%}
+      .row .fit{flex:1 1 auto}
+      .cell{width:80px}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div>
+    <div class="title">Disposizione posti in classe <span style="font-weight:400;font-size:13px;color:var(--muted)">v6</span></div>
+    <div class="sub">
+      Autore: <b>Lorenzo Antiga</b> —
+      <a href="mailto:lorenzo.antiga@gmail.com">&lt;lorenzo.antiga@gmail.com&gt;</a>
+    </div>
+  </div>
+</header>
+
+<main class="stack">
+
+  <!-- INPUT -->
+  <section class="card stack">
+
+    <div class="row" style="align-items:flex-end">
+      <div style="flex:0 0 160px">
+        <label for="nStudents"><b>Numero di alunni</b></label>
+        <input id="nStudents" type="number" min="1" value="19" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="antipatie"><b>Coppie non permesse</b> (es: 1-2; 5-6)</label>
+        <textarea id="antipatie">1-2
+5-6</textarea>
+      </div>
+      <div>
+        <label for="vicinanze"><b>Vicinanze obbligatorie</b> (es: 1:3,6; 2:4,5)</label>
+        <textarea id="vicinanze">1:3,6
+2:3,4,12</textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="layout"><b>Layout dei banchi</b> (righe separate da newline o ";") <b>1</b>=posto assegnabile, <b>0</b>=posto non assegnabile, <b>c</b>=corridoio</label>
+        <textarea id="layout">11c10cc11
+11c111c11
+11c111c11</textarea>
+        <div class="hint">Suggerimento: mantieni tutte le righe con la stessa lunghezza.</div>
+      </div>
+      <div>
+        <label for="lista"><b>Lista alunni</b> (opzionale: 1[TAB]Nome Cognome)</label>
+        <textarea id="lista" style="min-height:160px">1	Calmo Tranquilli
+2	Chiasso Rumori
+3	Serena Pacata
+4	Furio Scattante
+5	Sogno Distratto
+6	Giulia Precisa
+7	Gioia Ridolini
+8	Pio Ordinato
+9	Stella Curiosa
+10	Bruno Silenzio
+11	Marta Puntuale
+12	Leo Chiacchieroni
+13	Nina Creativa
+14	Toto Giocherello
+15	Rita Seria
+16	Paco Sportivo
+17	Vanda Polemica
+18	Lello Dormiglione
+19	Iris Sensibile</textarea>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="optionsBlock">
+      <div class="hint"><b>Opzioni di controllo</b> (le opzioni "tra file" e "corridoio" valgono SOLO per le coppie non ammesse)</div>
+
+      <label class="chk">
+        <input type="checkbox" id="optNames" checked>
+        Mostra nomi in anteprima
+      </label>
+
+      <label class="chk">
+        <input type="checkbox" id="optRows" checked>
+        Controlla anche tra file (davanti/dietro/diagonali)
+      </label>
+
+      <label class="chk">
+        <input type="checkbox" id="optCorridor">
+        Corridoio conta come vicino (1-c-1)
+      </label>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn fit" id="btnGenerate">Genera disposizione</button>
+      <button class="btn cancel fit" id="btnCancel" style="display:none">Annulla</button>
+      <button class="btn secondary fit" id="btnPrev" disabled>&#8592; Precedente</button>
+      <button class="btn secondary fit" id="btnNext" disabled>Successiva &#8594;</button>
+      <button class="btn orange fit" id="btnExport">Esporta (testo)</button>
+      <label class="btn orange fit" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+        Importa&hellip;
+        <input id="fileImport" type="file" accept=".txt,text/plain" style="display:none" />
+      </label>
+    </div>
+
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="card previewWrap">
+    <div class="row" style="justify-content:space-between">
+      <h2>Anteprima</h2>
+      <div class="hint">Click su due banchi per scambiare &mdash; c=corridoio, 0=non assegnabile</div>
+    </div>
+    <div class="preview">
+      <div class="classGrid" id="classGrid"></div>
+    </div>
+  </section>
+
+  <!-- STATO VINCOLI -->
+  <section class="card stack">
+    <div class="status" id="status"></div>
+    <div class="hint" id="statusDetails"></div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- DISPOSIZIONE DEI POSTI -->
+  <section class="card stack">
+    <pre class="output" id="output"></pre>
+  </section>
+
+</main>
+
+<script>
+/** ===================== UTILITY ===================== **/
+const $ = (id) => document.getElementById(id);
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+}
+
+function downloadText(filename, content) {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/** ===================== PARSING ===================== **/
+function parseAntipatie(text) {
+  text = (text || "").trim();
+  if (!text) return [];
+  const parts = text.replaceAll("\n", " ").split(";").map(s => s.trim()).filter(Boolean);
+  const pairs = [];
+  for (const p of parts) {
+    if (!p.includes("-")) throw new Error(`Formato non valido per coppia non permessa: '${p}' (usa es. 1-2)`);
+    const [a, b] = p.split("-").map(x => x.trim());
+    const ia = parseInt(a, 10), ib = parseInt(b, 10);
+    if (!Number.isInteger(ia) || !Number.isInteger(ib)) throw new Error(`Coppia non permessa non valida: '${p}'`);
+    pairs.push([ia, ib]);
+  }
+  return pairs;
+}
+
+function parseVicinanze(text) {
+  text = (text || "").trim();
+  if (!text) return {};
+  const groups = text.replaceAll("\n", " ").split(";").map(s => s.trim()).filter(Boolean);
+  const out = {};
+  for (const g of groups) {
+    if (!g.includes(":")) throw new Error(`Formato non valido per vicinanza: '${g}' (usa es. 1:3,6)`);
+    const [sStr, listStr] = g.split(":");
+    const s = parseInt(sStr.trim(), 10);
+    if (!Number.isInteger(s)) throw new Error(`Studente non valido in vicinanza: '${g}'`);
+    const vicini = listStr.split(",").map(x => x.trim()).filter(Boolean).map(x => parseInt(x, 10));
+    if (vicini.some(v => !Number.isInteger(v))) throw new Error(`Lista vicini non valida in: '${g}'`);
+    if (vicini.length === 0) throw new Error(`Nessun vicino valido per lo studente ${s} in '${g}'`);
+    out[s] = vicini;
+  }
+  return out;
+}
+
+function parseLayout(text) {
+  text = (text || "").trim();
+  if (!text) throw new Error("Il layout dei banchi non può essere vuoto.");
+  const parts = text.replaceAll("\n", ";").split(";").map(s => s.trim()).filter(Boolean);
+  const rows = [];
+  for (const row of parts) {
+    const compact = row.replaceAll(/\s+/g, "").toLowerCase();
+    if (!compact) continue;
+    for (const ch of compact) {
+      if (!["1", "0", "c"].includes(ch)) throw new Error(`Carattere non valido nel layout: '${ch}'. Usa solo 1, 0, c.`);
+    }
+    rows.push(compact);
+  }
+  if (rows.length === 0) throw new Error("Layout dei banchi non valido.");
+  const len = Math.max(...rows.map(r => r.length));
+  if (rows.some(r => r.length !== len)) throw new Error("Tutte le righe del layout devono avere lo stesso numero di colonne.");
+  return rows;
+}
+
+function parseStudentList(text) {
+  text = (text || "").trim();
+  if (!text) return {};
+  const names = {};
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line) continue;
+    let numStr = "", name = "";
+    if (line.includes("\t")) {
+      const idx = line.indexOf("\t");
+      numStr = line.slice(0, idx).trim();
+      name = line.slice(idx + 1).trim();
+    } else {
+      const m = line.match(/^(\d+)\s+(.*)$/);
+      if (!m) throw new Error(`Riga lista alunni non valida: '${line}'`);
+      numStr = m[1]; name = m[2].trim();
+    }
+    const num = parseInt(numStr, 10);
+    if (!Number.isInteger(num)) throw new Error(`Numero alunno non valido nella riga: '${line}'`);
+    if (!name) throw new Error(`Nome mancante per lo studente ${num} nella riga: '${line}'`);
+    names[num] = name;
+  }
+  return names;
+}
+
+/** ===================== ADIACENZE ===================== **/
+function costruisciAdiacenze(layoutRows, considerRows, considerCorridor) {
+  const grid = layoutRows.map(r => [...r]);
+  const R = grid.length, C = grid[0].length;
+  const seats = [];
+  const posToId = new Map();
+
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      if (grid[r][c] === "1") {
+        const id = seats.length;
+        seats.push([r, c]);
+        posToId.set(`${r},${c}`, id);
+      }
+    }
+  }
+
+  const adjBy = Array.from({ length: seats.length }, () => new Set());
+  const pairs = new Set();
+  const neighborOffsets = considerRows
+    ? [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
+    : [[0, -1], [0, 1]];
+
+  for (let i = 0; i < seats.length; i++) {
+    const [r, c] = seats[i];
+    for (const [dr, dc] of neighborOffsets) {
+      const nid = posToId.get(`${r + dr},${c + dc}`);
+      if (nid !== undefined) {
+        adjBy[i].add(nid);
+        const a = Math.min(i, nid), b = Math.max(i, nid);
+        pairs.add(`${a},${b}`);
+      }
+    }
+  }
+
+  if (considerCorridor) {
+    const corridorOffsets = [[0, -2], [0, 2], [-2, 0], [2, 0]];
+    for (let i = 0; i < seats.length; i++) {
+      const [r, c] = seats[i];
+      for (const [dr, dc] of corridorOffsets) {
+        const nr = r + dr, nc = c + dc;
+        const mr = r + dr / 2, mc = c + dc / 2;
+        if (nr < 0 || nr >= R || nc < 0 || nc >= C) continue;
+        if (mr < 0 || mr >= R || mc < 0 || mc >= C) continue;
+        if (grid[mr][mc] === "c" && grid[nr][nc] === "1") {
+          const nid = posToId.get(`${nr},${nc}`);
+          if (nid !== undefined) {
+            adjBy[i].add(nid);
+            const a = Math.min(i, nid), b = Math.max(i, nid);
+            pairs.add(`${a},${b}`);
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    adjacencyPairs: [...pairs].map(s => s.split(",").map(n => parseInt(n, 10))),
+    adjacencyByIndex: adjBy.map(s => [...s]),
+    numPosti: seats.length
+  };
+}
+
+function costruisciAdiacenzeVicinanze(layoutRows) {
+  const grid = layoutRows.map(r => [...r]);
+  const R = grid.length, C = grid[0].length;
+  const seats = [];
+  const posToId = new Map();
+
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      if (grid[r][c] === "1") {
+        const id = seats.length;
+        seats.push([r, c]);
+        posToId.set(`${r},${c}`, id);
+      }
+    }
+  }
+
+  const adjBy = Array.from({ length: seats.length }, () => new Set());
+  const offsets = [[0, -1], [0, 1]];
+
+  for (let i = 0; i < seats.length; i++) {
+    const [r, c] = seats[i];
+    for (const [dr, dc] of offsets) {
+      const nid = posToId.get(`${r + dr},${c + dc}`);
+      if (nid !== undefined) {
+        adjBy[i].add(nid);
+      }
+    }
+  }
+
+  return { adjacencyByIndex: adjBy.map(s => [...s]), numPosti: seats.length };
+}
+
+/** ===================== VINCOLI ===================== **/
+function inAntipatia(a, b, antipatie) {
+  for (const [x, y] of antipatie) {
+    if ((x === a && y === b) || (x === b && y === a)) return true;
+  }
+  return false;
+}
+
+function nessunaAntipatia(posti, adjacencyPairs, antipatie) {
+  for (const [i, j] of adjacencyPairs) {
+    const s1 = posti[i], s2 = posti[j];
+    if (s1 === 0 || s2 === 0) continue;
+    if (inAntipatia(s1, s2, antipatie)) return false;
+  }
+  return true;
+}
+
+function soddisfaVicinanze(posti, adjacencyByIndex, vicinanzeObb) {
+  const pos = new Map();
+  for (let i = 0; i < posti.length; i++) if (posti[i] !== 0) pos.set(posti[i], i);
+  for (const [sStr, vicini] of Object.entries(vicinanzeObb)) {
+    const s = parseInt(sStr, 10);
+    if (!pos.has(s)) return false;
+    const idx = pos.get(s);
+    const neighStudents = adjacencyByIndex[idx].map(j => posti[j]).filter(x => x !== 0);
+    if (!vicini.some(v => neighStudents.includes(v))) return false;
+  }
+  return true;
+}
+
+function validateConstraints(n, antipatie, vicinanze) {
+  const errors = [], warnings = [];
+  for (const [a, b] of antipatie) {
+    if (!(a >= 1 && a <= n) || !(b >= 1 && b <= n)) {
+      errors.push(`Coppia non permessa (${a}-${b}) contiene uno studente fuori 1..${n}.`);
+    }
+  }
+  for (const [sStr, lst] of Object.entries(vicinanze)) {
+    const s = parseInt(sStr, 10);
+    if (!(s >= 1 && s <= n)) errors.push(`Studente ${s} nelle vicinanze obbligatorie è fuori 1..${n}.`);
+    for (const v of lst) {
+      if (!(v >= 1 && v <= n)) errors.push(`Studente ${v} nelle vicinanze di ${s} è fuori 1..${n}.`);
+      if (inAntipatia(s, v, antipatie)) {
+        warnings.push(`Attenzione: ${s} deve stare vicino a ${v}, ma (${s}-${v}) è anche tra le coppie non permesse.`);
+      }
+    }
+  }
+  return { errors, warnings };
+}
+
+/** ===================== FORMATTAZIONE ===================== **/
+function formatDisposizione(posti, layoutRows) {
+  const maxNum = Math.max(1, ...posti.filter(x => x > 0));
+  const w = Math.max(2, String(maxNum).length);
+  let idx = 0;
+  const lines = [];
+  for (const row of layoutRows) {
+    const groups = [];
+    let cur = [];
+    for (const ch of row) {
+      if (ch === "1") {
+        const s = idx < posti.length ? posti[idx] : 0;
+        cur.push(s !== 0 ? String(s).padStart(w, " ") : ".".padStart(w, " "));
+        idx++;
+      } else {
+        if (cur.length) { groups.push(cur.join(" ")); cur = []; }
+      }
+    }
+    if (cur.length) groups.push(cur.join(" "));
+    lines.push(groups.join("  ||  "));
+  }
+  return lines.join("\n");
+}
+
+function formatDisposizioneNomi(posti, layoutRows, names) {
+  let idx = 0;
+  const lines = [];
+  for (const row of layoutRows) {
+    const groups = [];
+    let cur = [];
+    for (const ch of row) {
+      if (ch === "1") {
+        const s = idx < posti.length ? posti[idx] : 0;
+        if (s === 0) cur.push(" . ");
+        else cur.push(`${s} ${names[s] || s}`);
+        idx++;
+      } else {
+        if (cur.length) { groups.push(cur.join(" | ")); cur = []; }
+      }
+    }
+    if (cur.length) groups.push(cur.join(" | "));
+    lines.push(groups.join("  ||  "));
+  }
+  return lines.join("\n");
+}
+
+/** ===================== WEB WORKER (ibrido: shuffle + backtracking) ===================== **/
+function workerMain() {
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  let globalStart = 0;
+
+  /* Verifica antipatie su array completo */
+  function checkAntipatie(posti, antAdjPairs, antiSet) {
+    for (const [i, j] of antAdjPairs) {
+      const s1 = posti[i], s2 = posti[j];
+      if (s1 === 0 || s2 === 0) continue;
+      const lo = Math.min(s1, s2), hi = Math.max(s1, s2);
+      if (antiSet.has(lo * 100000 + hi)) return false;
+    }
+    return true;
+  }
+
+  /* Verifica vicinanze su array completo */
+  function checkVicinanze(posti, vicAdjByIndex, vicinanze) {
+    const pos = new Map();
+    for (let i = 0; i < posti.length; i++) {
+      if (posti[i] !== 0) pos.set(posti[i], i);
+    }
+    for (const [sStr, required] of Object.entries(vicinanze)) {
+      const s = parseInt(sStr, 10);
+      if (!pos.has(s)) return false;
+      const idx = pos.get(s);
+      const neighbors = vicAdjByIndex[idx].map(j => posti[j]).filter(x => x !== 0);
+      if (!required.some(v => neighbors.includes(v))) return false;
+    }
+    return true;
+  }
+
+  self.onmessage = function(e) {
+    const { n, numPosti, antAdjPairs, antAdjByIndex, vicAdjByIndex, antipatie, vicinanze, timeoutMs } = e.data;
+    globalStart = Date.now();
+
+    /* Lookup rapido antipatie */
+    const antiSet = new Set();
+    for (const [a, b] of antipatie) {
+      const lo = Math.min(a, b), hi = Math.max(a, b);
+      antiSet.add(lo * 100000 + hi);
+    }
+    const isAnti = (x, y) => {
+      const lo = Math.min(x, y), hi = Math.max(x, y);
+      return antiSet.has(lo * 100000 + hi);
+    };
+
+    const hasVicinanze = Object.keys(vicinanze).length > 0;
+    const halfDeadline = globalStart + Math.floor(timeoutMs * 0.6);
+    const fullDeadline = globalStart + timeoutMs;
+
+    /* ═══════ FASE 1: Random Shuffle (veloce per vincoli laschi) ═══════ */
+    const posti = [];
+    for (let i = 1; i <= n; i++) posti.push(i);
+    while (posti.length < numPosti) posti.push(0);
+
+    let shuffleAttempts = 0;
+    const maxShuffleAttempts = 500000;
+    let shuffleFound = false;
+
+    for (; shuffleAttempts < maxShuffleAttempts; shuffleAttempts++) {
+      if (shuffleAttempts % 10000 === 0 && shuffleAttempts > 0) {
+        if (Date.now() > halfDeadline) break;
+        self.postMessage({
+          type: "progress",
+          detail: "Shuffle: " + shuffleAttempts.toLocaleString("it") + " tentativi\u2026",
+          timeMs: Date.now() - globalStart
+        });
+      }
+      shuffle(posti);
+      if (checkAntipatie(posti, antAdjPairs, antiSet) &&
+          checkVicinanze(posti, vicAdjByIndex, vicinanze)) {
+        shuffleFound = true;
+        break;
+      }
+    }
+
+    if (shuffleFound) {
+      self.postMessage({
+        type: "result", posti: [...posti],
+        method: "shuffle", shuffleAttempts, btIterations: 0,
+        timeMs: Date.now() - globalStart, timedOut: false
+      });
+      return;
+    }
+
+    /* ═══════ FASE 2: Backtracking con random restart ═══════ */
+    self.postMessage({
+      type: "progress",
+      detail: "Shuffle non riuscito dopo " + shuffleAttempts.toLocaleString("it") + " tentativi, passo al backtracking\u2026",
+      timeMs: Date.now() - globalStart
+    });
+
+    /* Pesi vincoli per ordinamento studenti */
+    const students = Array.from({ length: n }, (_, i) => i + 1);
+    const weight = new Map();
+    for (const s of students) {
+      let w = 0;
+      for (const [a, b] of antipatie) {
+        if (a === s || b === s) w += 1;
+      }
+      const vicKey = String(s);
+      if (vicinanze[vicKey]) w += vicinanze[vicKey].length * 3;
+      for (const [, list] of Object.entries(vicinanze)) {
+        if (list.includes(s)) w += 2;
+      }
+      weight.set(s, w);
+    }
+
+    let btIterations = 0;
+    const RESTART_LIMIT = 50000;
+    let btFound = false;
+    let resultSeats = null;
+
+    while (Date.now() < fullDeadline && !btFound) {
+      /* Shuffle studenti mantenendo ordine per peso */
+      shuffle(students);
+      students.sort((a, b) => weight.get(b) - weight.get(a));
+
+      const seats = new Array(numPosti).fill(0);
+      const studentSeat = new Map();
+      let localIter = 0;
+
+      function backtrack(idx) {
+        localIter++;
+        btIterations++;
+        if (localIter > RESTART_LIMIT) return false;
+        if (btIterations % 50000 === 0) {
+          if (Date.now() > fullDeadline) return false;
+          self.postMessage({
+            type: "progress",
+            detail: "Backtracking: " + btIterations.toLocaleString("it") + " nodi\u2026",
+            timeMs: Date.now() - globalStart
+          });
+        }
+
+        if (idx === students.length) {
+          if (!hasVicinanze) return true;
+          for (const [sStr, required] of Object.entries(vicinanze)) {
+            const s = parseInt(sStr, 10);
+            const seat = studentSeat.get(s);
+            if (seat === undefined) return false;
+            const neighbors = vicAdjByIndex[seat].map(j => seats[j]).filter(x => x !== 0);
+            if (!required.some(v => neighbors.includes(v))) return false;
+          }
+          return true;
+        }
+
+        const student = students[idx];
+        const vicKey = String(student);
+
+        const emptySeats = [];
+        for (let i = 0; i < numPosti; i++) {
+          if (seats[i] === 0) emptySeats.push(i);
+        }
+
+        /* Preferisci posti adiacenti ai vicini richiesti */
+        if (vicinanze[vicKey]) {
+          const required = vicinanze[vicKey];
+          const preferredSet = new Set();
+          for (const v of required) {
+            if (studentSeat.has(v)) {
+              for (const adj of vicAdjByIndex[studentSeat.get(v)]) {
+                if (seats[adj] === 0) preferredSet.add(adj);
+              }
+            }
+          }
+          if (preferredSet.size > 0) {
+            const preferred = [...preferredSet];
+            shuffle(preferred);
+            const rest = emptySeats.filter(s => !preferredSet.has(s));
+            shuffle(rest);
+            emptySeats.length = 0;
+            emptySeats.push(...preferred, ...rest);
+          } else {
+            shuffle(emptySeats);
+          }
+        } else {
+          shuffle(emptySeats);
+        }
+
+        for (const seat of emptySeats) {
+          if (localIter > RESTART_LIMIT) return false;
+
+          /* Antipatie con vicini piazzati */
+          let antiOk = true;
+          for (const ns of antAdjByIndex[seat]) {
+            if (seats[ns] !== 0 && isAnti(student, seats[ns])) {
+              antiOk = false;
+              break;
+            }
+          }
+          if (!antiOk) continue;
+
+          /* Forward check vicinanze */
+          if (vicinanze[vicKey]) {
+            const required = vicinanze[vicKey];
+            const adjPlaced = vicAdjByIndex[seat].filter(j => seats[j] !== 0).map(j => seats[j]);
+            const adjEmpty = vicAdjByIndex[seat].filter(j => seats[j] === 0);
+            const satisfied = required.some(v => adjPlaced.includes(v));
+            if (!satisfied) {
+              const unplacedReq = required.filter(v => !studentSeat.has(v));
+              if (unplacedReq.length === 0) continue;
+              if (adjEmpty.length === 0) continue;
+            }
+          }
+
+          /* Piazza */
+          seats[seat] = student;
+          studentSeat.set(student, seat);
+          if (backtrack(idx + 1)) return true;
+          seats[seat] = 0;
+          studentSeat.delete(student);
+        }
+        return false;
+      }
+
+      if (backtrack(0)) {
+        btFound = true;
+        resultSeats = [...seats];
+      }
+    }
+
+    self.postMessage({
+      type: "result",
+      posti: resultSeats,
+      method: btFound ? "backtracking" : "both",
+      shuffleAttempts, btIterations,
+      timeMs: Date.now() - globalStart,
+      timedOut: !btFound && Date.now() >= fullDeadline
+    });
+  };
+}
+
+/* Crea Worker da Blob */
+const WORKER_BLOB = new Blob(
+  ["(" + workerMain.toString() + ")()"],
+  { type: "application/javascript" }
+);
+const WORKER_URL = URL.createObjectURL(WORKER_BLOB);
+let currentWorker = null;
+
+/** ===================== STATO APP ===================== **/
+let state = {
+  layoutRows: null,
+  posti: null,
+  studentNames: {},
+  antipatie: [],
+  vicinanze: {},
+  selectedSeatIndex: null,
+  violatedStudents: null,
+  history: [],
+  historyIndex: -1
+};
+
+function cloneState() {
+  return {
+    layoutRows: state.layoutRows ? JSON.parse(JSON.stringify(state.layoutRows)) : null,
+    posti: state.posti ? [...state.posti] : null,
+    studentNames: JSON.parse(JSON.stringify(state.studentNames)),
+    antipatie: JSON.parse(JSON.stringify(state.antipatie)),
+    vicinanze: JSON.parse(JSON.stringify(state.vicinanze)),
+    optRows: $("optRows").checked,
+    optCorridor: $("optCorridor").checked
+  };
+}
+
+function updateHistoryButtons() {
+  $("btnPrev").disabled = !(state.historyIndex > 0);
+  $("btnNext").disabled = !(state.historyIndex >= 0 && state.historyIndex < state.history.length - 1);
+}
+
+function pushHistory() {
+  if (!state.layoutRows || !state.posti) return;
+  const snap = cloneState();
+  if (state.historyIndex < state.history.length - 1) {
+    state.history = state.history.slice(0, state.historyIndex + 1);
+  }
+  state.history.push(snap);
+  state.historyIndex = state.history.length - 1;
+  updateHistoryButtons();
+}
+
+function applySnapshot(snap) {
+  state.layoutRows = JSON.parse(JSON.stringify(snap.layoutRows));
+  state.posti = [...snap.posti];
+  state.studentNames = JSON.parse(JSON.stringify(snap.studentNames));
+  state.antipatie = JSON.parse(JSON.stringify(snap.antipatie));
+  state.vicinanze = JSON.parse(JSON.stringify(snap.vicinanze));
+  state.selectedSeatIndex = null;
+
+  $("optRows").checked = !!snap.optRows;
+  $("optCorridor").checked = !!snap.optCorridor;
+
+  $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
+  drawPreview();
+  validateCurrentArrangement();
+  updateHistoryButtons();
+}
+
+/** ===================== PREVIEW ===================== **/
+function drawPreview() {
+  const host = $("classGrid");
+  host.innerHTML = "";
+  if (!state.layoutRows) return;
+
+  const rows = state.layoutRows.length;
+  const cols = state.layoutRows[0].length;
+  host.style.gridTemplateColumns = `repeat(${cols}, 92px)`;
+
+  let seatIdx = 0;
+  for (let r = 0; r < rows; r++) {
+    const row = state.layoutRows[r];
+    for (let c = 0; c < cols; c++) {
+      const ch = row[c];
+      const cell = document.createElement("div");
+
+      if (ch === "c") {
+        cell.className = "cell corridor";
+        host.appendChild(cell);
+        continue;
+      }
+      if (ch === "0") {
+        cell.className = "cell zero";
+        host.appendChild(cell);
+        continue;
+      }
+
+      cell.className = "cell seat";
+      const seatIndex = seatIdx;
+      const seatNo = seatIdx + 1;
+      const s = state.posti && seatIdx < state.posti.length ? state.posti[seatIdx] : 0;
+
+      if (state.selectedSeatIndex === seatIndex) cell.classList.add("selected");
+      if (s !== 0) cell.classList.add("filled");
+      if (s !== 0 && state.violatedStudents) {
+        if (state.violatedStudents.anti.has(s)) cell.classList.add("warn-anti");
+        else if (state.violatedStudents.vic.has(s)) cell.classList.add("warn-vic");
+      }
+
+      const n = document.createElement("div");
+      n.className = "seatNo";
+      n.textContent = String(seatNo);
+
+      const label = document.createElement("div");
+      label.className = "seatLabel";
+      if (s !== 0) {
+        if ($("optNames").checked) {
+          const nm = state.studentNames[s];
+          label.textContent = nm ? `${s} - ${nm}` : String(s);
+        } else {
+          label.textContent = String(s);
+        }
+      }
+
+      cell.appendChild(n);
+      cell.appendChild(label);
+      cell.addEventListener("click", () => onSeatClick(seatIndex));
+      host.appendChild(cell);
+
+      seatIdx++;
+    }
+  }
+}
+
+function onSeatClick(seatIndex) {
+  if (!state.posti || !state.layoutRows) return;
+
+  if (state.selectedSeatIndex === null) {
+    state.selectedSeatIndex = seatIndex;
+    drawPreview();
+    return;
+  }
+  if (state.selectedSeatIndex === seatIndex) {
+    state.selectedSeatIndex = null;
+    drawPreview();
+    validateCurrentArrangement();
+    return;
+  }
+
+  const i = state.selectedSeatIndex;
+  const j = seatIndex;
+  [state.posti[i], state.posti[j]] = [state.posti[j], state.posti[i]];
+  state.selectedSeatIndex = null;
+
+  $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
+  drawPreview();
+  validateCurrentArrangement();
+}
+
+/** ===================== VALIDAZIONE ===================== **/
+function nameOf(s) {
+  return state.studentNames[s] ? `${s} (${state.studentNames[s]})` : String(s);
+}
+
+function getViolatedAntipatie(posti, adjacencyPairs, antipatie) {
+  const violations = [];
+  const seen = new Set();
+  for (const [i, j] of adjacencyPairs) {
+    const s1 = posti[i], s2 = posti[j];
+    if (s1 === 0 || s2 === 0) continue;
+    if (inAntipatia(s1, s2, antipatie)) {
+      const key = `${Math.min(s1,s2)},${Math.max(s1,s2)}`;
+      if (!seen.has(key)) { seen.add(key); violations.push([s1, s2]); }
+    }
+  }
+  return violations;
+}
+
+function getUnsatisfiedVicinanze(posti, adjacencyByIndex, vicinanzeObb) {
+  const violations = [];
+  const pos = new Map();
+  for (let i = 0; i < posti.length; i++) if (posti[i] !== 0) pos.set(posti[i], i);
+  for (const [sStr, vicini] of Object.entries(vicinanzeObb)) {
+    const s = parseInt(sStr, 10);
+    if (!pos.has(s)) { violations.push({ s, vicini }); continue; }
+    const idx = pos.get(s);
+    const neighStudents = adjacencyByIndex[idx].map(j => posti[j]).filter(x => x !== 0);
+    if (!vicini.some(v => neighStudents.includes(v))) violations.push({ s, vicini });
+  }
+  return violations;
+}
+
+function validateCurrentArrangement() {
+  const status = $("status");
+  const details = $("statusDetails");
+  status.textContent = "";
+  details.textContent = "";
+  status.className = "status";
+
+  if (!state.layoutRows || !state.posti) return;
+
+  const optRows = $("optRows").checked;
+  const optCorridor = $("optCorridor").checked;
+  const ant = costruisciAdiacenze(state.layoutRows, optRows, optCorridor);
+  const vic = costruisciAdiacenzeVicinanze(state.layoutRows);
+
+  const antViolations = getViolatedAntipatie(state.posti, ant.adjacencyPairs, state.antipatie);
+  const vicViolations = getUnsatisfiedVicinanze(state.posti, vic.adjacencyByIndex, state.vicinanze);
+
+  const optInfo =
+    `Coppie non permesse: ${optRows ? "riga + file/diagonali" : "solo riga"}; ` +
+    `corridoio come vicino: ${optCorridor ? "S\u00CC (1-c-1)" : "NO"}. ` +
+    `Vicinanze obbligatorie: SOLO orizzontali (corridoio separa).`;
+
+  if (antViolations.length === 0 && vicViolations.length === 0) {
+    state.violatedStudents = null;
+    status.textContent = "\u2714 Disposizione valida: vincoli rispettati";
+    status.classList.add("ok");
+    details.textContent = optInfo;
+  } else {
+    const antiStudents = new Set();
+    for (const [s1, s2] of antViolations) { antiStudents.add(s1); antiStudents.add(s2); }
+    const vicStudents = new Set();
+    for (const { s } of vicViolations) vicStudents.add(s);
+    state.violatedStudents = { anti: antiStudents, vic: vicStudents };
+
+    const lines = [];
+    if (antViolations.length > 0) {
+      lines.push("<b>Coppie non permesse violate:</b>");
+      for (const [s1, s2] of antViolations) {
+        lines.push(`&nbsp;&nbsp;\u2022 ${nameOf(s1)} e ${nameOf(s2)} sono vicini`);
+      }
+    }
+    if (vicViolations.length > 0) {
+      if (lines.length > 0) lines.push("");
+      lines.push("<b>Vicinanze obbligatorie non rispettate:</b>");
+      for (const { s, vicini } of vicViolations) {
+        const vList = vicini.map(nameOf).join(", ");
+        lines.push(`&nbsp;&nbsp;\u2022 ${nameOf(s)} deve stare vicino ad almeno uno tra: ${vList}`);
+      }
+    }
+    status.textContent = "\u26A0 Disposizione non valida";
+    status.classList.add("warn");
+    details.innerHTML = lines.join("<br>") + `<br><small style="color:var(--muted)">${optInfo}</small>`;
+  }
+  drawPreview();
+}
+
+const debouncedValidate = debounce(validateCurrentArrangement, 150);
+
+/** ===================== GENERA ===================== **/
+function setGenerating(active) {
+  $("btnGenerate").disabled = active;
+  $("btnCancel").style.display = active ? "" : "none";
+  if (active) {
+    $("output").classList.add("generating");
+  } else {
+    $("output").classList.remove("generating");
+  }
+}
+
+function cancelGeneration() {
+  if (currentWorker) {
+    currentWorker.terminate();
+    currentWorker = null;
+    setGenerating(false);
+    $("output").textContent = "Generazione annullata dall'utente.";
+    $("stats").textContent = "";
+  }
+}
+
+function generaClick() {
+  if (currentWorker) return;
+
+  try {
+    const n = parseInt($("nStudents").value, 10);
+    if (!Number.isInteger(n) || n <= 0) throw new Error("Numero di studenti non valido.");
+
+    const antipatie = parseAntipatie($("antipatie").value);
+    const vicinanze = parseVicinanze($("vicinanze").value);
+    const layoutRows = parseLayout($("layout").value);
+    const names = parseStudentList($("lista").value);
+    const optRows = $("optRows").checked;
+    const optCorridor = $("optCorridor").checked;
+
+    const { errors, warnings } = validateConstraints(n, antipatie, vicinanze);
+    if (errors.length) throw new Error(errors.join("\n"));
+    if (warnings.length) console.warn("Avvisi vincoli:", warnings);
+
+    const ant = costruisciAdiacenze(layoutRows, optRows, optCorridor);
+    const vic = costruisciAdiacenzeVicinanze(layoutRows);
+
+    if (ant.numPosti < n) throw new Error(`Ci sono solo ${ant.numPosti} posti assegnabili (celle '1') ma ${n} studenti.`);
+
+    /* Avvia worker */
+    setGenerating(true);
+    $("output").textContent = "Generazione in corso\u2026";
+    $("status").textContent = "";
+    $("statusDetails").textContent = "";
+    $("stats").textContent = "";
+
+    const worker = new Worker(WORKER_URL);
+    currentWorker = worker;
+
+    worker.onmessage = function(e) {
+      if (e.data.type === "progress") {
+        $("output").textContent =
+          `Generazione in corso\u2026 ${e.data.detail} (${(e.data.timeMs / 1000).toFixed(1)}s)`;
+        return;
+      }
+
+      /* Risultato finale */
+      currentWorker = null;
+      setGenerating(false);
+
+      const { posti, method, shuffleAttempts, btIterations, timeMs, timedOut } = e.data;
+      const parts = [];
+      if (shuffleAttempts > 0) parts.push(`Shuffle: ${shuffleAttempts.toLocaleString("it")} tentativi`);
+      if (btIterations > 0) parts.push(`Backtracking: ${btIterations.toLocaleString("it")} nodi`);
+      $("stats").textContent = parts.join(" + ") + ` in ${(timeMs / 1000).toFixed(2)}s` + (method ? ` [${method}]` : "");
+
+      if (!posti) {
+        state.layoutRows = null;
+        state.posti = null;
+        state.studentNames = names;
+        state.antipatie = antipatie;
+        state.vicinanze = vicinanze;
+        state.selectedSeatIndex = null;
+
+        $("output").textContent = timedOut
+          ? "Timeout: non \u00E8 stata trovata una disposizione entro il tempo limite.\nProva a ridurre i vincoli o modificare il layout."
+          : "Non esiste una disposizione compatibile con i vincoli indicati.\nRiduci i vincoli o modifica il layout dei banchi.";
+        $("status").textContent = "";
+        $("statusDetails").textContent = "";
+        $("classGrid").innerHTML = "";
+        updateHistoryButtons();
+        return;
+      }
+
+      state.layoutRows = layoutRows;
+      state.posti = posti;
+      state.studentNames = names;
+      state.antipatie = antipatie;
+      state.vicinanze = vicinanze;
+      state.selectedSeatIndex = null;
+
+      $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(posti, layoutRows);
+      drawPreview();
+      validateCurrentArrangement();
+      pushHistory();
+    };
+
+    worker.onerror = function(err) {
+      currentWorker = null;
+      setGenerating(false);
+      $("output").textContent = "Errore nel worker: " + (err.message || err);
+      $("stats").textContent = "";
+    };
+
+    worker.postMessage({
+      n,
+      numPosti: ant.numPosti,
+      antAdjPairs: ant.adjacencyPairs,
+      antAdjByIndex: ant.adjacencyByIndex,
+      vicAdjByIndex: vic.adjacencyByIndex,
+      antipatie,
+      vicinanze,
+      timeoutMs: 15000
+    });
+
+  } catch (e) {
+    alert(String(e.message || e));
+  }
+}
+
+/** ===================== EXPORT / IMPORT ===================== **/
+function exportAll() {
+  try {
+    const nStr = String($("nStudents").value || "").trim();
+    const antip = String($("antipatie").value || "").trim();
+    const vic = String($("vicinanze").value || "").trim();
+    const lay = String($("layout").value || "").trim();
+    const lista = String($("lista").value || "").trim();
+
+    let outNum = "Nessuna disposizione generata.\n";
+    let outNames = "Nessuna disposizione generata.\n";
+    if (state.layoutRows && state.posti) {
+      outNum = formatDisposizione(state.posti, state.layoutRows) + "\n";
+      outNames = formatDisposizioneNomi(state.posti, state.layoutRows, state.studentNames) + "\n";
+    }
+
+    const content =
+`=== INPUT ===
+
+Numero di alunni:
+${nStr}
+
+Coppie non permesse:
+${antip}
+
+Vicinanze obbligatorie:
+${vic}
+
+Layout dei banchi:
+${lay}
+
+Lista alunni:
+${lista}
+
+Opzioni (solo coppie non ammesse):
+Controlla anche tra file: ${$("optRows").checked}
+Corridoio conta come vicino (1-c-1): ${$("optCorridor").checked}
+
+=== OUTPUT NUMERICO ===
+
+${outNum}
+
+=== OUTPUT CON NOMI ===
+
+${outNames}
+`;
+    downloadText("disposizione_classe.txt", content);
+  } catch (e) {
+    alert(String(e.message || e));
+  }
+}
+
+function importFromText(txt) {
+  const lines = txt.replaceAll("\r\n", "\n").split("\n");
+
+  function findLabel(label) {
+    const lower = label.toLowerCase().trim();
+    return lines.findIndex(l => l.toLowerCase().trim() === lower);
+  }
+
+  function readBlock(label, stopLabels) {
+    const idx = findLabel(label);
+    if (idx === -1) return "";
+    const collected = [];
+    for (let i = idx + 1; i < lines.length; i++) {
+      const lineLower = lines[i].toLowerCase().trim();
+      if (stopLabels.some(sl => lineLower === sl.toLowerCase().trim())) break;
+      collected.push(lines[i]);
+    }
+    return collected.join("\n").trim();
+  }
+
+  const labels = [
+    "Numero di alunni:",
+    "Coppie non permesse:",
+    "Vicinanze obbligatorie:",
+    "Layout dei banchi:",
+    "Lista alunni:",
+    "Opzioni (solo coppie non ammesse):",
+    "=== INPUT ===",
+    "=== OUTPUT NUMERICO ===",
+    "=== OUTPUT CON NOMI ===",
+  ];
+
+  const nBlock = readBlock("Numero di alunni:", labels) || "0";
+  const antipBlock = readBlock("Coppie non permesse:", labels);
+  const vicBlock = readBlock("Vicinanze obbligatorie:", labels);
+  const layoutBlock = readBlock("Layout dei banchi:", labels);
+  const listaBlock = readBlock("Lista alunni:", labels);
+  const optBlock = readBlock("Opzioni (solo coppie non ammesse):", labels);
+  const outNumBlock = readBlock("=== OUTPUT NUMERICO ===", labels);
+
+  let nVal = "0";
+  for (const ln of nBlock.split("\n")) {
+    if (ln.trim()) { nVal = ln.trim(); break; }
+  }
+
+  $("nStudents").value = nVal;
+  $("antipatie").value = antipBlock;
+  $("vicinanze").value = vicBlock;
+  $("layout").value = layoutBlock;
+  $("lista").value = listaBlock;
+
+  if (optBlock) {
+    for (const ln of optBlock.split("\n")) {
+      const lower = ln.toLowerCase();
+      if (lower.includes("controlla anche tra file")) {
+        const val = ln.split(":").pop().trim().toLowerCase();
+        $("optRows").checked = ["true", "1", "si", "sì", "yes"].includes(val);
+      }
+      if (lower.includes("corridoio conta come vicino")) {
+        const val = ln.split(":").pop().trim().toLowerCase();
+        $("optCorridor").checked = ["true", "1", "si", "sì", "yes"].includes(val);
+      }
+    }
+  }
+
+  try {
+    const layoutRows = parseLayout(layoutBlock);
+    const expected = layoutRows.reduce((acc, r) => acc + [...r].filter(ch => ch === "1").length, 0);
+
+    const tokens = outNumBlock.replaceAll("||", " ").split(/\s+/).map(x => x.trim()).filter(Boolean);
+    const posti = [];
+    for (const t of tokens) {
+      if (t === ".") { posti.push(0); continue; }
+      const v = parseInt(t, 10);
+      if (Number.isInteger(v)) posti.push(v);
+    }
+
+    if (posti.length >= expected) {
+      state.layoutRows = layoutRows;
+      state.posti = posti.slice(0, expected);
+      state.studentNames = parseStudentList(listaBlock);
+      state.antipatie = parseAntipatie(antipBlock);
+      state.vicinanze = parseVicinanze(vicBlock);
+      state.selectedSeatIndex = null;
+
+      $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
+      drawPreview();
+      validateCurrentArrangement();
+
+      state.history = [];
+      state.historyIndex = -1;
+      updateHistoryButtons();
+      pushHistory();
+      return;
+    }
+  } catch (e) {
+    console.warn("Import: impossibile ripristinare output numerico:", e);
+  }
+
+  state.layoutRows = null;
+  state.posti = null;
+  state.studentNames = {};
+  state.antipatie = [];
+  state.vicinanze = {};
+  state.selectedSeatIndex = null;
+  state.history = [];
+  state.historyIndex = -1;
+  updateHistoryButtons();
+
+  $("output").textContent = "";
+  $("classGrid").innerHTML = "";
+  $("status").textContent = "";
+  $("statusDetails").textContent = "";
+  $("stats").textContent = "";
+}
+
+/** ===================== EVENTI UI ===================== **/
+$("btnGenerate").addEventListener("click", generaClick);
+$("btnCancel").addEventListener("click", cancelGeneration);
+$("btnExport").addEventListener("click", exportAll);
+
+$("btnPrev").addEventListener("click", () => {
+  if (state.historyIndex > 0) {
+    state.historyIndex -= 1;
+    applySnapshot(state.history[state.historyIndex]);
+  }
+});
+$("btnNext").addEventListener("click", () => {
+  if (state.historyIndex >= 0 && state.historyIndex < state.history.length - 1) {
+    state.historyIndex += 1;
+    applySnapshot(state.history[state.historyIndex]);
+  }
+});
+
+$("optNames").addEventListener("change", () => drawPreview());
+$("optRows").addEventListener("change", debouncedValidate);
+$("optCorridor").addEventListener("change", debouncedValidate);
+
+$("fileImport").addEventListener("change", async (ev) => {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  const txt = await file.text();
+  importFromText(txt);
+  ev.target.value = "";
+});
+
+/* Placeholder iniziale */
+$("output").textContent =
+  "Premi \u201CGenera disposizione\u201D per creare una disposizione.\n" +
+  "Poi fai click su due banchi nell\u2019anteprima per scambiare gli alunni.\n";
+</script>
+</body>
+</html>
