@@ -82,6 +82,109 @@
     .hint{font-size:12px;color:var(--muted)}
     .divider{height:1px;background:var(--line);margin:4px 0}
 
+    .pairBuilder{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+    .pairBuilderRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .pairBuilderRow select{
+      flex:1;min-width:120px;max-width:280px;
+      border:1px solid var(--line);border-radius:10px;
+      padding:8px 10px;font-size:13px;background:#fff;
+      color:var(--text);outline:none;cursor:pointer;
+    }
+    .pairBuilderRow .arrow{font-size:18px;color:var(--muted);flex:0 0 auto}
+    .savedGroupEdit{
+      background:none;border:1px solid #f97316;color:#f97316;
+      cursor:pointer;font-size:12px;border-radius:8px;
+      padding:2px 7px;margin-left:2px;
+    }
+    .savedGroupEdit:hover{background:#fff7ed}
+    .editingBanner{
+      font-size:12px;color:#92400e;background:#fef3c7;
+      border:1px solid #fcd34d;border-radius:8px;
+      padding:4px 10px;display:inline-block;
+    }
+
+    .studentCheckList{
+      max-height:180px;overflow-y:auto;
+      border:1px solid var(--line);border-radius:10px;
+      background:#fff;padding:4px 0;
+      display:flex;flex-direction:column;
+    }
+    .studentCheckItem{
+      display:flex;align-items:center;gap:8px;
+      padding:5px 12px;font-size:13px;cursor:pointer;
+      user-select:none;
+    }
+    .studentCheckItem:hover:not(.inGroup){background:#f8fafc}
+    .studentCheckItem input[type="checkbox"]{
+      cursor:pointer;width:15px;height:15px;flex:0 0 auto;
+      accent-color:var(--btn-cancel);
+    }
+    .studentCheckItem.inGroup{
+      color:var(--muted);cursor:default;
+      background:#f9fafb;
+    }
+    .studentCheckItem.inGroup input{cursor:default;opacity:.5}
+    .inGroupBadge{
+      font-size:11px;color:#9ca3af;
+      background:#f3f4f6;border-radius:6px;
+      padding:1px 5px;margin-left:auto;flex:0 0 auto;
+    }
+    #btnAddToGroup:disabled{opacity:.4;cursor:not-allowed}
+
+    .vicGroups{display:flex;flex-direction:column;gap:6px;min-height:24px}
+    .vicGroup{
+      display:flex;flex-wrap:wrap;gap:5px;align-items:center;
+      background:#fffbeb;border:1px solid #fcd34d;
+      border-radius:10px;padding:5px 10px;font-size:12px;
+    }
+    .vicGroupLabel{color:#92400e;font-weight:700;white-space:nowrap;margin-right:2px}
+    .vicArrow{color:#b45309;margin-right:2px;flex:0 0 auto}
+    .vicPill{
+      display:inline-flex;align-items:center;gap:4px;
+      background:#fff7ed;border:1px solid #f97316;
+      border-radius:20px;padding:2px 7px 2px 9px;
+      font-size:12px;color:#9a3412;
+    }
+    .vicRemove{
+      background:none;border:none;color:#f97316;
+      cursor:pointer;font-size:15px;line-height:1;
+      padding:0 1px;display:flex;align-items:center;
+    }
+    .vicRemove:hover{color:#9a3412}
+
+    .curGroupPills{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
+    .curGroupPill{
+      display:inline-flex;align-items:center;gap:4px;
+      background:#f1f5f9;border:1px solid #94a3b8;
+      border-radius:20px;padding:3px 8px 3px 10px;
+      font-size:12px;color:#334155;
+    }
+    .curGroupRemove{
+      background:none;border:none;color:#64748b;
+      cursor:pointer;font-size:16px;line-height:1;
+      padding:0 2px;display:flex;align-items:center;
+    }
+    .curGroupRemove:hover{color:#1e293b}
+    .savedGroups{display:flex;flex-direction:column;gap:5px}
+    .savedGroup{
+      display:flex;align-items:center;flex-wrap:wrap;gap:5px;
+      background:#fef2f2;border:1px solid #fca5a5;
+      border-radius:10px;padding:6px 10px;font-size:12px;
+    }
+    .savedGroupLabel{color:#7f1d1d;font-weight:700;font-size:11px;margin-right:2px;white-space:nowrap}
+    .savedGroupMembers{display:flex;flex-wrap:wrap;gap:4px;flex:1}
+    .savedGroupMember{
+      background:#fee2e2;border:1px solid #fca5a5;
+      border-radius:12px;padding:2px 8px;color:#991b1b;
+    }
+    .savedGroupDel{
+      background:none;border:none;color:#dc2626;
+      cursor:pointer;font-size:16px;line-height:1;
+      padding:0 3px;margin-left:2px;display:flex;align-items:center;
+    }
+    .savedGroupDel:hover{color:#7f1d1d}
+    #btnSaveGroup:disabled{opacity:.4;cursor:not-allowed}
+
     .optionsBlock{
       display:flex;
       flex-direction:column;
@@ -193,14 +296,33 @@
 
     <div class="row">
       <div>
-        <label for="antipatie"><b>Coppie non permesse</b> (es: 1-2; 5-6)</label>
-        <textarea id="antipatie">1-2
-5-6</textarea>
-      </div>
-      <div>
         <label for="vicinanze"><b>Vicinanze obbligatorie</b> (es: 1:3,6; 2:4,5)</label>
         <textarea id="vicinanze">1:3,6
 2:3,4,12</textarea>
+        <div class="pairBuilder">
+          <div class="pairBuilderRow">
+            <select id="vicStudente"></select>
+            <span style="font-size:13px;color:var(--muted);flex:0 0 auto">deve stare vicino a</span>
+            <select id="vicVicino"></select>
+            <button class="btn fit" id="btnAddVicinanza" style="background:var(--btn3);color:#111827;font-size:13px;padding:8px 12px">+ Aggiungi</button>
+          </div>
+          <div class="vicGroups" id="vicGroups"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label for="gruppiNonAmmessi"><b>Gruppi non ammessi</b> <span class="hint">— tutti i membri non possono stare vicini tra loro (es: 1,3,5)</span></label>
+      <textarea id="gruppiNonAmmessi" style="min-height:60px"></textarea>
+      <div class="pairBuilder">
+        <div class="studentCheckList" id="gruppoCheckList"></div>
+        <div class="pairBuilderRow" id="gruppoBuilderRow">
+          <button class="btn fit" id="btnAddToGroup" style="background:#475569;font-size:13px;padding:8px 12px" disabled>+ Aggiungi selezionati</button>
+          <button class="btn fit" id="btnSaveGroup" style="background:var(--btn-cancel);font-size:13px;padding:8px 12px" disabled>Salva gruppo</button>
+          <button class="btn fit" id="btnClearGroup" style="background:#94a3b8;font-size:13px;padding:8px 12px">Annulla</button>
+        </div>
+        <div class="curGroupPills" id="curGroupPills"></div>
+        <div class="savedGroups" id="savedGroups"></div>
       </div>
     </div>
 
@@ -239,7 +361,7 @@
     <div class="divider"></div>
 
     <div class="optionsBlock">
-      <div class="hint"><b>Opzioni di controllo</b> (le opzioni "tra file" e "corridoio" valgono SOLO per le coppie non ammesse)</div>
+      <div class="hint"><b>Opzioni di controllo</b> (le opzioni "tra file" e "corridoio" valgono SOLO per i gruppi non ammessi)</div>
 
       <label class="chk">
         <input type="checkbox" id="optNames" checked>
@@ -316,25 +438,10 @@ function downloadText(filename, content) {
 }
 
 /** ===================== PARSING ===================== **/
-function parseAntipatie(text) {
-  text = (text || "").trim();
-  if (!text) return [];
-  const parts = text.replaceAll("\n", " ").split(";").map(s => s.trim()).filter(Boolean);
-  const pairs = [];
-  for (const p of parts) {
-    if (!p.includes("-")) throw new Error(`Formato non valido per coppia non permessa: '${p}' (usa es. 1-2)`);
-    const [a, b] = p.split("-").map(x => x.trim());
-    const ia = parseInt(a, 10), ib = parseInt(b, 10);
-    if (!Number.isInteger(ia) || !Number.isInteger(ib)) throw new Error(`Coppia non permessa non valida: '${p}'`);
-    pairs.push([ia, ib]);
-  }
-  return pairs;
-}
-
 function parseVicinanze(text) {
   text = (text || "").trim();
   if (!text) return {};
-  const groups = text.replaceAll("\n", " ").split(";").map(s => s.trim()).filter(Boolean);
+  const groups = text.split(/[\n;]/).map(s => s.trim()).filter(Boolean);
   const out = {};
   for (const g of groups) {
     if (!g.includes(":")) throw new Error(`Formato non valido per vicinanza: '${g}' (usa es. 1:3,6)`);
@@ -348,6 +455,33 @@ function parseVicinanze(text) {
   }
   return out;
 }
+
+function parseGruppi(text) {
+  text = (text || "").trim();
+  if (!text) return [];
+  const groups = [];
+  for (const line of text.split(/[\n;]/)) {
+    const t = line.trim();
+    if (!t) continue;
+    const members = t.split(",").map(x => x.trim()).filter(Boolean).map(x => parseInt(x, 10));
+    if (members.some(v => !Number.isInteger(v))) throw new Error(`Gruppo non valido: '${t}'`);
+    if (members.length >= 2) groups.push(members);
+  }
+  return groups;
+}
+
+function expandGruppiToPairs(gruppi) {
+  const pairs = [];
+  for (const group of gruppi) {
+    for (let i = 0; i < group.length; i++) {
+      for (let j = i + 1; j < group.length; j++) {
+        pairs.push([group[i], group[j]]);
+      }
+    }
+  }
+  return pairs;
+}
+
 
 function parseLayout(text) {
   text = (text || "").trim();
@@ -496,14 +630,6 @@ function inAntipatia(a, b, antipatie) {
   return false;
 }
 
-function nessunaAntipatia(posti, adjacencyPairs, antipatie) {
-  for (const [i, j] of adjacencyPairs) {
-    const s1 = posti[i], s2 = posti[j];
-    if (s1 === 0 || s2 === 0) continue;
-    if (inAntipatia(s1, s2, antipatie)) return false;
-  }
-  return true;
-}
 
 function soddisfaVicinanze(posti, adjacencyByIndex, vicinanzeObb) {
   const pos = new Map();
@@ -837,7 +963,7 @@ let state = {
   layoutRows: null,
   posti: null,
   studentNames: {},
-  antipatie: [],
+  gruppi: [],
   vicinanze: {},
   selectedSeatIndex: null,
   violatedStudents: null,
@@ -850,7 +976,7 @@ function cloneState() {
     layoutRows: state.layoutRows ? JSON.parse(JSON.stringify(state.layoutRows)) : null,
     posti: state.posti ? [...state.posti] : null,
     studentNames: JSON.parse(JSON.stringify(state.studentNames)),
-    antipatie: JSON.parse(JSON.stringify(state.antipatie)),
+    gruppi: JSON.parse(JSON.stringify(state.gruppi)),
     vicinanze: JSON.parse(JSON.stringify(state.vicinanze)),
     optRows: $("optRows").checked,
     optCorridor: $("optCorridor").checked
@@ -877,7 +1003,7 @@ function applySnapshot(snap) {
   state.layoutRows = JSON.parse(JSON.stringify(snap.layoutRows));
   state.posti = [...snap.posti];
   state.studentNames = JSON.parse(JSON.stringify(snap.studentNames));
-  state.antipatie = JSON.parse(JSON.stringify(snap.antipatie));
+  state.gruppi = JSON.parse(JSON.stringify(snap.gruppi || []));
   state.vicinanze = JSON.parse(JSON.stringify(snap.vicinanze));
   state.selectedSeatIndex = null;
 
@@ -1027,7 +1153,7 @@ function validateCurrentArrangement() {
   const ant = costruisciAdiacenze(state.layoutRows, optRows, optCorridor);
   const vic = costruisciAdiacenzeVicinanze(state.layoutRows);
 
-  const antViolations = getViolatedAntipatie(state.posti, ant.adjacencyPairs, state.antipatie);
+  const antViolations = getViolatedAntipatie(state.posti, ant.adjacencyPairs, expandGruppiToPairs(state.gruppi));
   const vicViolations = getUnsatisfiedVicinanze(state.posti, vic.adjacencyByIndex, state.vicinanze);
 
   const optInfo =
@@ -1099,14 +1225,15 @@ function generaClick() {
     const n = parseInt($("nStudents").value, 10);
     if (!Number.isInteger(n) || n <= 0) throw new Error("Numero di studenti non valido.");
 
-    const antipatie = parseAntipatie($("antipatie").value);
+    const gruppi = parseGruppi($("gruppiNonAmmessi").value);
+    const allAntipatie = expandGruppiToPairs(gruppi);
     const vicinanze = parseVicinanze($("vicinanze").value);
     const layoutRows = parseLayout($("layout").value);
     const names = parseStudentList($("lista").value);
     const optRows = $("optRows").checked;
     const optCorridor = $("optCorridor").checked;
 
-    const { errors, warnings } = validateConstraints(n, antipatie, vicinanze);
+    const { errors, warnings } = validateConstraints(n, allAntipatie, vicinanze);
     if (errors.length) throw new Error(errors.join("\n"));
     if (warnings.length) console.warn("Avvisi vincoli:", warnings);
 
@@ -1146,7 +1273,7 @@ function generaClick() {
         state.layoutRows = null;
         state.posti = null;
         state.studentNames = names;
-        state.antipatie = antipatie;
+        state.gruppi = gruppi;
         state.vicinanze = vicinanze;
         state.selectedSeatIndex = null;
 
@@ -1163,7 +1290,7 @@ function generaClick() {
       state.layoutRows = layoutRows;
       state.posti = posti;
       state.studentNames = names;
-      state.antipatie = antipatie;
+      state.gruppi = gruppi;
       state.vicinanze = vicinanze;
       state.selectedSeatIndex = null;
 
@@ -1186,7 +1313,7 @@ function generaClick() {
       antAdjPairs: ant.adjacencyPairs,
       antAdjByIndex: ant.adjacencyByIndex,
       vicAdjByIndex: vic.adjacencyByIndex,
-      antipatie,
+      antipatie: allAntipatie,
       vicinanze,
       timeoutMs: 15000
     });
@@ -1200,7 +1327,7 @@ function generaClick() {
 function exportAll() {
   try {
     const nStr = String($("nStudents").value || "").trim();
-    const antip = String($("antipatie").value || "").trim();
+    const gruppiStr = String($("gruppiNonAmmessi").value || "").trim();
     const vic = String($("vicinanze").value || "").trim();
     const lay = String($("layout").value || "").trim();
     const lista = String($("lista").value || "").trim();
@@ -1218,8 +1345,8 @@ function exportAll() {
 Numero di alunni:
 ${nStr}
 
-Coppie non permesse:
-${antip}
+Gruppi non ammessi:
+${gruppiStr}
 
 Vicinanze obbligatorie:
 ${vic}
@@ -1230,7 +1357,7 @@ ${lay}
 Lista alunni:
 ${lista}
 
-Opzioni (solo coppie non ammesse):
+Opzioni (solo gruppi non ammessi):
 Controlla anche tra file: ${$("optRows").checked}
 Corridoio conta come vicino (1-c-1): ${$("optCorridor").checked}
 
@@ -1271,22 +1398,33 @@ function importFromText(txt) {
   const labels = [
     "Numero di alunni:",
     "Coppie non permesse:",
+    "Gruppi non ammessi:",
     "Vicinanze obbligatorie:",
     "Layout dei banchi:",
     "Lista alunni:",
     "Opzioni (solo coppie non ammesse):",
+    "Opzioni (solo gruppi non ammessi):",
     "=== INPUT ===",
     "=== OUTPUT NUMERICO ===",
     "=== OUTPUT CON NOMI ===",
   ];
 
   const nBlock = readBlock("Numero di alunni:", labels) || "0";
-  const antipBlock = readBlock("Coppie non permesse:", labels);
+  const legacyPairsBlock = readBlock("Coppie non permesse:", labels);
+  let gruppiBlock = readBlock("Gruppi non ammessi:", labels);
   const vicBlock = readBlock("Vicinanze obbligatorie:", labels);
   const layoutBlock = readBlock("Layout dei banchi:", labels);
   const listaBlock = readBlock("Lista alunni:", labels);
-  const optBlock = readBlock("Opzioni (solo coppie non ammesse):", labels);
+  const optBlock = readBlock("Opzioni (solo coppie non ammesse):", labels)
+               || readBlock("Opzioni (solo gruppi non ammessi):", labels);
   const outNumBlock = readBlock("=== OUTPUT NUMERICO ===", labels);
+
+  /* Compat: converte vecchie coppie in gruppi da 2 */
+  if (!gruppiBlock && legacyPairsBlock) {
+    const convertedLines = legacyPairsBlock.split(/[\n;]/).map(s => s.trim()).filter(Boolean)
+      .map(p => p.replace("-", ",")).filter(s => s.includes(","));
+    gruppiBlock = convertedLines.join("\n");
+  }
 
   let nVal = "0";
   for (const ln of nBlock.split("\n")) {
@@ -1294,7 +1432,7 @@ function importFromText(txt) {
   }
 
   $("nStudents").value = nVal;
-  $("antipatie").value = antipBlock;
+  $("gruppiNonAmmessi").value = gruppiBlock;
   $("vicinanze").value = vicBlock;
   $("layout").value = layoutBlock;
   $("lista").value = listaBlock;
@@ -1329,13 +1467,15 @@ function importFromText(txt) {
       state.layoutRows = layoutRows;
       state.posti = posti.slice(0, expected);
       state.studentNames = parseStudentList(listaBlock);
-      state.antipatie = parseAntipatie(antipBlock);
+      state.gruppi = parseGruppi(gruppiBlock);
       state.vicinanze = parseVicinanze(vicBlock);
       state.selectedSeatIndex = null;
 
       $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
       drawPreview();
       validateCurrentArrangement();
+      renderSavedGroups();
+      renderVicGroups();
 
       state.history = [];
       state.historyIndex = -1;
@@ -1350,7 +1490,7 @@ function importFromText(txt) {
   state.layoutRows = null;
   state.posti = null;
   state.studentNames = {};
-  state.antipatie = [];
+  state.gruppi = [];
   state.vicinanze = {};
   state.selectedSeatIndex = null;
   state.history = [];
@@ -1362,6 +1502,303 @@ function importFromText(txt) {
   $("status").textContent = "";
   $("statusDetails").textContent = "";
   $("stats").textContent = "";
+}
+
+/** ===================== PAIR BUILDER ===================== **/
+function studentLabel(num, names) {
+  const nm = names[num];
+  return nm ? `${num} - ${nm}` : String(num);
+}
+
+const debouncedRebuildPairs = debounce(() => {
+  rebuildVicinanzaSelects();
+  renderVicGroups();
+  rebuildGruppoCheckList();
+  renderSavedGroups();
+  renderCurrentGroupPills();
+}, 300);
+
+/** ===================== VICINANZE BUILDER ===================== **/
+function rebuildVicinanzaSelects() {
+  const n = parseInt($("nStudents").value, 10) || 0;
+  let names = {};
+  try { names = parseStudentList($("lista").value); } catch (e) {}
+
+  const selS = $("vicStudente");
+  const selV = $("vicVicino");
+  const prevS = selS.value, prevV = selV.value;
+
+  selS.innerHTML = "";
+  selV.innerHTML = "";
+
+  for (let i = 1; i <= n; i++) {
+    const label = studentLabel(i, names);
+    selS.appendChild(new Option(label, i));
+    selV.appendChild(new Option(label, i));
+  }
+
+  if (prevS && selS.querySelector(`option[value="${prevS}"]`)) selS.value = prevS;
+  else selS.value = "1";
+
+  if (prevV && selV.querySelector(`option[value="${prevV}"]`)) selV.value = prevV;
+  else if (n >= 2) selV.value = "2";
+  else selV.value = "1";
+}
+
+function vicinanzaToText(vicinanze) {
+  return Object.entries(vicinanze)
+    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+    .map(([k, list]) => `${k}:${list.join(",")}`)
+    .join("\n");
+}
+
+function renderVicGroups() {
+  let vicinanze = {};
+  try { vicinanze = parseVicinanze($("vicinanze").value); } catch (e) {}
+  let names = {};
+  try { names = parseStudentList($("lista").value); } catch (e) {}
+
+  const container = $("vicGroups");
+  container.innerHTML = "";
+
+  for (const [sStr, vicini] of Object.entries(vicinanze).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))) {
+    const s = parseInt(sStr, 10);
+    const group = document.createElement("div");
+    group.className = "vicGroup";
+
+    const lbl = document.createElement("span");
+    lbl.className = "vicGroupLabel";
+    lbl.textContent = studentLabel(s, names);
+    group.appendChild(lbl);
+
+    const arrow = document.createElement("span");
+    arrow.className = "vicArrow";
+    arrow.textContent = "→";
+    group.appendChild(arrow);
+
+    for (const v of vicini) {
+      const pill = document.createElement("span");
+      pill.className = "vicPill";
+      const txt = document.createTextNode(studentLabel(v, names) + " ");
+      const btn = document.createElement("button");
+      btn.className = "vicRemove";
+      btn.title = "Rimuovi";
+      btn.textContent = "×";
+      btn.dataset.s = s;
+      btn.dataset.v = v;
+      pill.appendChild(txt);
+      pill.appendChild(btn);
+      group.appendChild(pill);
+    }
+
+    container.appendChild(group);
+  }
+}
+
+function addVicinanzaPair() {
+  const s = parseInt($("vicStudente").value, 10);
+  const v = parseInt($("vicVicino").value, 10);
+  if (!s || !v) return;
+  if (s === v) { alert("Seleziona due studenti diversi."); return; }
+
+  let vicinanze = {};
+  try { vicinanze = parseVicinanze($("vicinanze").value); } catch (e) {}
+
+  const key = String(s);
+  if (!vicinanze[key]) vicinanze[key] = [];
+  if (vicinanze[key].includes(v)) { alert("Questa vicinanza è già presente."); return; }
+  vicinanze[key].push(v);
+
+  $("vicinanze").value = vicinanzaToText(vicinanze);
+  renderVicGroups();
+}
+
+function removeVicinanzaNeighbor(s, v) {
+  let vicinanze = {};
+  try { vicinanze = parseVicinanze($("vicinanze").value); } catch (e) {}
+
+  const key = String(s);
+  if (!vicinanze[key]) return;
+  vicinanze[key] = vicinanze[key].filter(x => x !== v);
+  if (vicinanze[key].length === 0) delete vicinanze[key];
+
+  $("vicinanze").value = vicinanzaToText(vicinanze);
+  renderVicGroups();
+}
+
+/** ===================== GRUPPO BUILDER ===================== **/
+let currentGroup = [];
+let editingGroupIdx = -1;
+
+function gruppiToText(gruppi) {
+  return gruppi.map(g => g.join(",")).join("\n");
+}
+
+function rebuildGruppoCheckList() {
+  const n = parseInt($("nStudents").value, 10) || 0;
+  let names = {};
+  try { names = parseStudentList($("lista").value); } catch (e) {}
+
+  const container = $("gruppoCheckList");
+  container.innerHTML = "";
+  for (let i = 1; i <= n; i++) {
+    const inGroup = currentGroup.includes(i);
+    const item = document.createElement("label");
+    item.className = "studentCheckItem" + (inGroup ? " inGroup" : "");
+    item.dataset.s = i;
+
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
+    chk.value = i;
+    chk.disabled = inGroup;
+    chk.addEventListener("change", updateAddButton);
+
+    const lbl = document.createElement("span");
+    lbl.textContent = studentLabel(i, names);
+
+    item.appendChild(chk);
+    item.appendChild(lbl);
+
+    if (inGroup) {
+      const badge = document.createElement("span");
+      badge.className = "inGroupBadge";
+      badge.textContent = "nel gruppo";
+      item.appendChild(badge);
+    }
+
+    container.appendChild(item);
+  }
+}
+
+function updateAddButton() {
+  const anyChecked = $("gruppoCheckList").querySelector("input:checked") !== null;
+  $("btnAddToGroup").disabled = !anyChecked;
+}
+
+function renderCurrentGroupPills() {
+  let names = {};
+  try { names = parseStudentList($("lista").value); } catch (e) {}
+
+  const container = $("curGroupPills");
+  container.innerHTML = "";
+  for (const s of currentGroup) {
+    const pill = document.createElement("span");
+    pill.className = "curGroupPill";
+    const txt = document.createTextNode(studentLabel(s, names) + " ");
+    const btn = document.createElement("button");
+    btn.className = "curGroupRemove";
+    btn.title = "Rimuovi";
+    btn.textContent = "×";
+    btn.dataset.s = s;
+    pill.appendChild(txt);
+    pill.appendChild(btn);
+    container.appendChild(pill);
+  }
+  $("btnSaveGroup").disabled = currentGroup.length < 2;
+  $("btnSaveGroup").textContent = editingGroupIdx >= 0 ? "Aggiorna gruppo" : "Salva gruppo";
+  rebuildGruppoCheckList();
+}
+
+function renderSavedGroups() {
+  let gruppi = [];
+  try { gruppi = parseGruppi($("gruppiNonAmmessi").value); } catch (e) {}
+  let names = {};
+  try { names = parseStudentList($("lista").value); } catch (e) {}
+
+  const container = $("savedGroups");
+  container.innerHTML = "";
+  gruppi.forEach((group, idx) => {
+    const row = document.createElement("div");
+    row.className = "savedGroup";
+    if (idx === editingGroupIdx) row.style.outline = "2px solid #f97316";
+
+    const lbl = document.createElement("span");
+    lbl.className = "savedGroupLabel";
+    lbl.textContent = `Gruppo ${idx + 1}`;
+    row.appendChild(lbl);
+
+    const members = document.createElement("span");
+    members.className = "savedGroupMembers";
+    for (const s of group) {
+      const span = document.createElement("span");
+      span.className = "savedGroupMember";
+      span.textContent = studentLabel(s, names);
+      members.appendChild(span);
+    }
+    row.appendChild(members);
+
+    const edit = document.createElement("button");
+    edit.className = "savedGroupEdit";
+    edit.title = "Modifica gruppo";
+    edit.textContent = "Modifica";
+    edit.dataset.idx = idx;
+    row.appendChild(edit);
+
+    const del = document.createElement("button");
+    del.className = "savedGroupDel";
+    del.title = "Elimina gruppo";
+    del.textContent = "×";
+    del.dataset.idx = idx;
+    row.appendChild(del);
+
+    container.appendChild(row);
+  });
+}
+
+function addToCurrentGroup() {
+  const checked = [...$("gruppoCheckList").querySelectorAll("input:checked")];
+  if (!checked.length) return;
+  for (const chk of checked) {
+    const s = parseInt(chk.value, 10);
+    if (!currentGroup.includes(s)) currentGroup.push(s);
+  }
+  renderCurrentGroupPills(); // rebuilds checklist clearing checkboxes
+}
+
+function saveCurrentGroup() {
+  if (currentGroup.length < 2) return;
+  let gruppi = [];
+  try { gruppi = parseGruppi($("gruppiNonAmmessi").value); } catch (e) {}
+  if (editingGroupIdx >= 0 && editingGroupIdx < gruppi.length) {
+    gruppi[editingGroupIdx] = [...currentGroup];
+  } else {
+    gruppi.push([...currentGroup]);
+  }
+  $("gruppiNonAmmessi").value = gruppiToText(gruppi);
+  currentGroup = [];
+  editingGroupIdx = -1;
+  renderCurrentGroupPills();
+  renderSavedGroups();
+  debouncedValidate();
+}
+
+function editGruppo(idx) {
+  let gruppi = [];
+  try { gruppi = parseGruppi($("gruppiNonAmmessi").value); } catch (e) {}
+  if (idx < 0 || idx >= gruppi.length) return;
+  currentGroup = [...gruppi[idx]];
+  editingGroupIdx = idx;
+  renderCurrentGroupPills();
+  renderSavedGroups();
+  $("gruppoBuilderRow").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function clearCurrentGroup() {
+  currentGroup = [];
+  editingGroupIdx = -1;
+  renderCurrentGroupPills();
+  renderSavedGroups();
+}
+
+function removeGruppo(idx) {
+  if (editingGroupIdx === idx) { currentGroup = []; editingGroupIdx = -1; renderCurrentGroupPills(); }
+  else if (editingGroupIdx > idx) editingGroupIdx--;
+  let gruppi = [];
+  try { gruppi = parseGruppi($("gruppiNonAmmessi").value); } catch (e) {}
+  gruppi.splice(idx, 1);
+  $("gruppiNonAmmessi").value = gruppiToText(gruppi);
+  renderSavedGroups();
+  debouncedValidate();
 }
 
 /** ===================== EVENTI UI ===================== **/
@@ -1385,6 +1822,49 @@ $("btnNext").addEventListener("click", () => {
 $("optNames").addEventListener("change", () => drawPreview());
 $("optRows").addEventListener("change", debouncedValidate);
 $("optCorridor").addEventListener("change", debouncedValidate);
+
+$("nStudents").addEventListener("input", debouncedRebuildPairs);
+$("lista").addEventListener("input", debouncedRebuildPairs);
+
+$("btnAddVicinanza").addEventListener("click", addVicinanzaPair);
+
+$("vicGroups").addEventListener("click", (e) => {
+  const btn = e.target.closest(".vicRemove");
+  if (!btn) return;
+  removeVicinanzaNeighbor(parseInt(btn.dataset.s, 10), parseInt(btn.dataset.v, 10));
+  debouncedValidate();
+});
+
+$("vicinanze").addEventListener("input", () => { renderVicGroups(); debouncedValidate(); });
+
+/* Init vicinanze builder */
+rebuildVicinanzaSelects();
+renderVicGroups();
+
+$("btnAddToGroup").addEventListener("click", addToCurrentGroup);
+$("btnSaveGroup").addEventListener("click", saveCurrentGroup);
+$("btnClearGroup").addEventListener("click", clearCurrentGroup);
+
+$("curGroupPills").addEventListener("click", (e) => {
+  const btn = e.target.closest(".curGroupRemove");
+  if (!btn) return;
+  const s = parseInt(btn.dataset.s, 10);
+  currentGroup = currentGroup.filter(x => x !== s);
+  renderCurrentGroupPills();
+});
+
+$("savedGroups").addEventListener("click", (e) => {
+  const del = e.target.closest(".savedGroupDel");
+  if (del) { removeGruppo(parseInt(del.dataset.idx, 10)); return; }
+  const ed = e.target.closest(".savedGroupEdit");
+  if (ed) editGruppo(parseInt(ed.dataset.idx, 10));
+});
+
+$("gruppiNonAmmessi").addEventListener("input", () => { renderSavedGroups(); debouncedValidate(); });
+
+/* Init gruppo builder */
+rebuildGruppoCheckList();
+renderSavedGroups();
 
 $("fileImport").addEventListener("change", async (ev) => {
   const file = ev.target.files && ev.target.files[0];
