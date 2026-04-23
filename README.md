@@ -1,4 +1,4 @@
-# Disposizione posti in classe — v7 Beta
+# Disposizione posti in classe — v8
 
 Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
 
