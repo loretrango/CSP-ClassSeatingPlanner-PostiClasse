@@ -2,7 +2,7 @@
 
 Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
 
-**Autore:** Lorenzo Antiga — lorenzo.antiga@gmail.com
+Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 
 ---
 
