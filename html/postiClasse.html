@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Disposizione posti in classe v8 — Backtracking</title>
+  <title>Disposizione posti in classe v6 — Backtracking</title>
   <style>
     :root{
       --bg:#fbfbfc;
@@ -247,11 +247,12 @@
     .cell.warn-vic{background:#fff7ed !important;border-color:#f97316 !important}
     .seatNo{
       position:absolute; top:6px; left:8px;
-      font-size:11px; color:var(--muted); font-weight:800;
+      font-size:11px; color:var(--muted); font-weight:400;
     }
     .seatLabel{
       margin-top:16px;
       font-size:12px;
+      font-weight:700;
       line-height:1.15;
       word-break:break-word;
       color:var(--text);
@@ -267,6 +268,27 @@
       .row > *{flex:1 1 100%}
       .row .fit{flex:1 1 auto}
       .cell{width:80px}
+    }
+
+    .printOnly{display:none}
+
+    @media print{
+      @page{size:A4 landscape;margin:1.2cm}
+      header,
+      main > section:not(#previewCard),
+      #btnCancel,#btnPrev,#btnNext,#btnExport,#btnPdf,
+      label[for="fileImport"]{display:none!important}
+      body{background:#fff}
+      main{padding:0;max-width:100%}
+      #previewCard{border:none;padding:0;box-shadow:none}
+      .preview{border:none;min-height:0;overflow:visible;padding:0}
+      .printOnly{display:flex;align-items:baseline;gap:16px;margin-bottom:10px}
+      .printTitle{font-size:15px;font-weight:800}
+      .printMeta{font-size:12px;color:#6b7280}
+      .cell{
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+      }
     }
   </style>
 </head>
@@ -291,6 +313,7 @@
       <div style="flex:0 0 160px">
         <label for="nStudents"><b>Numero di alunni</b></label>
         <input id="nStudents" type="number" min="1" value="19" />
+        <div id="nStudentsHint" style="display:none;font-size:.78rem;color:#666;margin-top:2px">ricavato dalla lista</div>
       </div>
     </div>
 
@@ -385,6 +408,7 @@
       <button class="btn secondary fit" id="btnPrev" disabled>&#8592; Precedente</button>
       <button class="btn secondary fit" id="btnNext" disabled>Successiva &#8594;</button>
       <button class="btn orange fit" id="btnExport">Esporta (testo)</button>
+      <button class="btn orange fit" id="btnPdf">Esporta PDF</button>
       <label class="btn orange fit" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
         Importa&hellip;
         <input id="fileImport" type="file" accept=".txt,text/plain" style="display:none" />
@@ -394,7 +418,11 @@
   </section>
 
   <!-- PREVIEW -->
-  <section class="card previewWrap">
+  <section class="card previewWrap" id="previewCard">
+    <div class="printOnly">
+      <span class="printTitle">Disposizione posti in classe</span>
+      <span class="printMeta" id="printDate"></span>
+    </div>
     <div class="row" style="justify-content:space-between">
       <h2>Anteprima</h2>
       <div class="hint">Click su due banchi per scambiare &mdash; c=corridoio, 0=non assegnabile</div>
@@ -1222,7 +1250,7 @@ function generaClick() {
   if (currentWorker) return;
 
   try {
-    const n = parseInt($("nStudents").value, 10);
+    const n = getN();
     if (!Number.isInteger(n) || n <= 0) throw new Error("Numero di studenti non valido.");
 
     const gruppi = parseGruppi($("gruppiNonAmmessi").value);
@@ -1326,7 +1354,7 @@ function generaClick() {
 /** ===================== EXPORT / IMPORT ===================== **/
 function exportAll() {
   try {
-    const nStr = String($("nStudents").value || "").trim();
+    const nStr = String(getN() || "").trim();
     const gruppiStr = String($("gruppiNonAmmessi").value || "").trim();
     const vic = String($("vicinanze").value || "").trim();
     const lay = String($("layout").value || "").trim();
@@ -1339,8 +1367,14 @@ function exportAll() {
       outNames = formatDisposizioneNomi(state.posti, state.layoutRows, state.studentNames) + "\n";
     }
 
+    const now = new Date();
+    const ts = now.toLocaleDateString("it-IT", { day:"2-digit", month:"2-digit", year:"numeric" })
+             + " " + now.toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit" });
+
     const content =
-`=== INPUT ===
+`Esportato il: ${ts}
+
+=== INPUT ===
 
 Numero di alunni:
 ${nStr}
@@ -1369,7 +1403,12 @@ ${outNum}
 
 ${outNames}
 `;
-    downloadText("disposizione_classe.txt", content);
+    const fileTs = now.getFullYear()
+      + String(now.getMonth()+1).padStart(2,"0")
+      + String(now.getDate()).padStart(2,"0")
+      + "_" + String(now.getHours()).padStart(2,"0")
+      + String(now.getMinutes()).padStart(2,"0");
+    downloadText(`disposizione_classe_${fileTs}.txt`, content);
   } catch (e) {
     alert(String(e.message || e));
   }
@@ -1431,11 +1470,13 @@ function importFromText(txt) {
     if (ln.trim()) { nVal = ln.trim(); break; }
   }
 
-  $("nStudents").value = nVal;
+  $("lista").value = listaBlock;
+  updateNField();
+  if ($("nStudents").disabled) { /* N derived from list, nVal ignored */ }
+  else { $("nStudents").value = nVal; }
   $("gruppiNonAmmessi").value = gruppiBlock;
   $("vicinanze").value = vicBlock;
   $("layout").value = layoutBlock;
-  $("lista").value = listaBlock;
 
   if (optBlock) {
     for (const ln of optBlock.split("\n")) {
@@ -1510,6 +1551,31 @@ function studentLabel(num, names) {
   return nm ? `${num} - ${nm}` : String(num);
 }
 
+function getN() {
+  try {
+    const names = parseStudentList($("lista").value);
+    const keys = Object.keys(names).map(Number);
+    if (keys.length > 0) return Math.max(...keys);
+  } catch (e) {}
+  return parseInt($("nStudents").value, 10) || 0;
+}
+
+function updateNField() {
+  try {
+    const names = parseStudentList($("lista").value);
+    const keys = Object.keys(names).map(Number);
+    if (keys.length > 0) {
+      const n = Math.max(...keys);
+      $("nStudents").value = n;
+      $("nStudents").disabled = true;
+      $("nStudentsHint").style.display = "block";
+      return;
+    }
+  } catch (e) {}
+  $("nStudents").disabled = false;
+  $("nStudentsHint").style.display = "none";
+}
+
 const debouncedRebuildPairs = debounce(() => {
   rebuildVicinanzaSelects();
   renderVicGroups();
@@ -1520,7 +1586,7 @@ const debouncedRebuildPairs = debounce(() => {
 
 /** ===================== VICINANZE BUILDER ===================== **/
 function rebuildVicinanzaSelects() {
-  const n = parseInt($("nStudents").value, 10) || 0;
+  const n = getN() || 0;
   let names = {};
   try { names = parseStudentList($("lista").value); } catch (e) {}
 
@@ -1635,7 +1701,7 @@ function gruppiToText(gruppi) {
 }
 
 function rebuildGruppoCheckList() {
-  const n = parseInt($("nStudents").value, 10) || 0;
+  const n = getN() || 0;
   let names = {};
   try { names = parseStudentList($("lista").value); } catch (e) {}
 
@@ -1802,9 +1868,17 @@ function removeGruppo(idx) {
 }
 
 /** ===================== EVENTI UI ===================== **/
+function exportPdf() {
+  $("printDate").textContent = new Date().toLocaleDateString("it-IT", {
+    day: "2-digit", month: "long", year: "numeric"
+  });
+  window.print();
+}
+
 $("btnGenerate").addEventListener("click", generaClick);
 $("btnCancel").addEventListener("click", cancelGeneration);
 $("btnExport").addEventListener("click", exportAll);
+$("btnPdf").addEventListener("click", exportPdf);
 
 $("btnPrev").addEventListener("click", () => {
   if (state.historyIndex > 0) {
@@ -1824,7 +1898,7 @@ $("optRows").addEventListener("change", debouncedValidate);
 $("optCorridor").addEventListener("change", debouncedValidate);
 
 $("nStudents").addEventListener("input", debouncedRebuildPairs);
-$("lista").addEventListener("input", debouncedRebuildPairs);
+$("lista").addEventListener("input", () => { updateNField(); debouncedRebuildPairs(); });
 
 $("btnAddVicinanza").addEventListener("click", addVicinanzaPair);
 
@@ -1837,7 +1911,8 @@ $("vicGroups").addEventListener("click", (e) => {
 
 $("vicinanze").addEventListener("input", () => { renderVicGroups(); debouncedValidate(); });
 
-/* Init vicinanze builder */
+/* Init */
+updateNField();
 rebuildVicinanzaSelects();
 renderVicGroups();
 
