@@ -24,7 +24,7 @@ Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 
 ### 1. Aprire il file
 
-Aprire `postiClasse_beta.html` direttamente nel browser (nessun server necessario).
+Aprire `postiClasse.html` direttamente nel browser (nessun server necessario).
 
 ### 2. Configurare gli input
 
@@ -148,9 +148,9 @@ Timeout: **15 secondi** totali. Se non si trova una soluzione viene mostrato un 
 | `postiClasse_04.html` | UI minimale, export/import testo |
 | `postiClasse_05.html` | Checkbox riorganizzate, textarea antipatie su righe separate |
 | `postiClasse_06.html` | Motore ibrido shuffle + backtracking in Web Worker |
-| `postiClasse_07.html` / `postiClasse_beta.html` | Versione attuale (vedi sotto) |
+| `postiClasse.html` | Versione attuale (vedi sotto) |
 
-**`postiClasse_beta.html`** (= `postiClasse_07.html`) è la versione attiva e aggiornata. Rispetto alla v6 aggiunge:
+**`postiClasse.html`** è la versione attiva e aggiornata. Rispetto alla v6 aggiunge:
 - Gruppi non ammessi con builder visuale a checkbox (sostituisce "coppie non permesse")
 - Builder visuale per le vicinanze obbligatorie
 - Fix bug parser: `parseVicinanze` gestiva correttamente solo il separatore `;`, ignorando le righe separate da newline
