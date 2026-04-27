@@ -300,13 +300,15 @@
     <div class="sub">
       Autore: <b>Lorenzo Antiga</b> —
       <a href="mailto:lorenzo.antiga@gmail.com">&lt;lorenzo.antiga@gmail.com&gt;</a>
+       &mdash; <a href="https://github.com/loretrango/PostiClasse-SeatingPlanner" target="_blank" rel="noopener">GitHub</a>
+       &mdash; Licenza: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL v3</a>
     </div>
   </div>
 </header>
 
 <main class="stack">
 
-  <!-- INPUT  -->
+  <!-- INPUT -->
   <section class="card stack">
 
     <div class="row" style="align-items:flex-end">
@@ -415,6 +417,18 @@
       </label>
     </div>
 
+    <div class="hint" style="margin-top:4px">
+      Premi &#x201C;Genera disposizione&#x201D; per creare una disposizione.
+      Poi fai click su due banchi nell&#x2019;anteprima per scambiare gli alunni.
+    </div>
+
+  </section>
+
+  <!-- STATO VINCOLI -->
+  <section class="card stack">
+    <div class="status" id="status"></div>
+    <div class="hint" id="statusDetails"></div>
+    <div class="stats" id="stats"></div>
   </section>
 
   <!-- PREVIEW -->
@@ -430,13 +444,6 @@
     <div class="preview">
       <div class="classGrid" id="classGrid"></div>
     </div>
-  </section>
-
-  <!-- STATO VINCOLI -->
-  <section class="card stack">
-    <div class="status" id="status"></div>
-    <div class="hint" id="statusDetails"></div>
-    <div class="stats" id="stats"></div>
   </section>
 
   <!-- DISPOSIZIONE DEI POSTI -->
@@ -1869,10 +1876,19 @@ function removeGruppo(idx) {
 
 /** ===================== EVENTI UI ===================== **/
 function exportPdf() {
-  $("printDate").textContent = new Date().toLocaleDateString("it-IT", {
+  const now = new Date();
+  $("printDate").textContent = now.toLocaleDateString("it-IT", {
     day: "2-digit", month: "long", year: "numeric"
   });
+  const ts = now.getFullYear()
+    + String(now.getMonth() + 1).padStart(2, "0")
+    + String(now.getDate()).padStart(2, "0")
+    + "_" + String(now.getHours()).padStart(2, "0")
+    + String(now.getMinutes()).padStart(2, "0");
+  const prevTitle = document.title;
+  document.title = `disposizione_classe_${ts}`;
   window.print();
+  document.title = prevTitle;
 }
 
 $("btnGenerate").addEventListener("click", generaClick);
@@ -1949,10 +1965,7 @@ $("fileImport").addEventListener("change", async (ev) => {
   ev.target.value = "";
 });
 
-/* Placeholder iniziale */
-$("output").textContent =
-  "Premi \u201CGenera disposizione\u201D per creare una disposizione.\n" +
-  "Poi fai click su due banchi nell\u2019anteprima per scambiare gli alunni.\n";
+
 </script>
 </body>
 </html>
