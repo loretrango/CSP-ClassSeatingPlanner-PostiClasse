@@ -1,0 +1,57 @@
+Esportato il: 27/04/2026 20:13
+
+=== INPUT ===
+
+Numero di alunni:
+19
+
+Gruppi non ammessi:
+14,15,16,18
+
+Vicinanze obbligatorie:
+1:3,6
+2:3,4,12
+
+Layout dei banchi:
+11c10cc11
+11c111c11
+11c111c11
+
+Lista alunni:
+1	Calmo Tranquilli
+2	Chiasso Rumori
+3	Serena Pacata
+4	Furio Scattante
+5	Sogno Distratto
+6	Giulia Precisa
+7	Gioia Ridolini
+8	Pio Ordinato
+9	Stella Curiosa
+10	Bruno Silenzio
+11	Marta Puntuale
+12	Leo Chiacchieroni
+13	Nina Creativa
+14	Toto Giocherello
+15	Rita Seria
+16	Paco Sportivo
+17	Vanda Polemica
+18	Lello Dormiglione
+19	Iris Sensibile
+
+Opzioni (solo gruppi non ammessi):
+Controlla anche tra file: true
+Corridoio conta come vicino (1-c-1): true
+
+=== OUTPUT NUMERICO ===
+
+12  2  ||   4  ||  11 17
+13 15  ||   8  7 19  ||   1  6
+ 5  9  ||  18  3 14  ||  10 16
+
+
+=== OUTPUT CON NOMI ===
+
+12 Leo Chiacchieroni | 2 Chiasso Rumori  ||  4 Furio Scattante  ||  11 Marta Puntuale | 17 Vanda Polemica
+13 Nina Creativa | 15 Rita Seria  ||  8 Pio Ordinato | 7 Gioia Ridolini | 19 Iris Sensibile  ||  1 Calmo Tranquilli | 6 Giulia Precisa
+5 Sogno Distratto | 9 Stella Curiosa  ||  18 Lello Dormiglione | 3 Serena Pacata | 14 Toto Giocherello  ||  10 Bruno Silenzio | 16 Paco Sportivo
+

@@ -1,6 +1,7 @@
 # Disposizione posti in classe — v8
 
 Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
+Ad esempio, è possibile definire un gruppo di alunni che non devono, per qualche motivo, stare vicini. In modo analogo, è possiblie definire che un alunno debba stare obbligatoriamente vicino ad alcuni alunni (potrebbe essere il caso di un alunno straniero, che deve essere affiancato ad alunni che parlano la sua stessa lingua).
 
 Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 
@@ -17,6 +18,42 @@ Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 - **Navigazione cronologia** — pulsanti Precedente / Successiva per tornare alle disposizioni precedenti
 - **Esportazione** in file `.txt` con tutti gli input e l'output (numerico e con nomi)
 - **Importazione** da file `.txt` esportato in precedenza (con compatibilità verso i vecchi file con "Coppie non permesse")
+
+---
+
+## Scaricare e avviare
+
+### Scaricare da GitHub
+
+**Metodo 1 — Scarica solo il file HTML (consigliato)**
+
+1. Vai su [github.com/loretrango/PostiClasse-SeatingPlanner](https://github.com/loretrango/PostiClasse-SeatingPlanner)
+2. Clicca su `postiClasse.html`
+3. Clicca sul pulsante **Download raw file** (icona ↓ in alto a destra nel viewer del file)
+4. Il file `.html` viene salvato sul tuo computer
+
+In alternativa, scarica il file raw direttamente con `wget` o `curl`:
+```bash
+wget https://raw.githubusercontent.com/loretrango/PostiClasse-SeatingPlanner/main/postiClasse.html
+```
+
+**Metodo 2 — Clona l'intera repository**
+
+```bash
+git clone https://github.com/loretrango/PostiClasse-SeatingPlanner.git
+```
+
+### Avviare l'applicazione
+
+Dopo aver scaricato il file:
+
+- **Windows**: doppio clic su `postiClasse.html` → si apre nel browser predefinito
+- **macOS**: doppio clic su `postiClasse.html` → si apre in Safari (o browser predefinito)
+- **Linux**: `xdg-open postiClasse.html` oppure trascina il file nel browser
+
+Non è necessario installare nulla, avviare un server o avere una connessione internet.
+
+> **Nota**: se il browser chiede conferma per eseguire script locali (raro), concedi il permesso oppure usa Firefox che non pone questa restrizione.
 
 ---
 
