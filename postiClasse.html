@@ -35,6 +35,17 @@
     .title{font-weight:800;letter-spacing:.2px}
     .sub{font-size:14px;color:var(--muted)}
     .sub a{color:#2563eb;text-decoration:none}
+    #updateBanner{
+      display:none;position:sticky;top:0;z-index:20;
+      background:#1d4ed8;color:#fff;
+      padding:8px 16px;font-size:14px;
+      display:none;align-items:center;gap:10px;justify-content:center;
+    }
+    #updateBanner a{color:#bfdbfe;font-weight:600}
+    #updateBanner button{
+      background:none;border:none;color:#fff;cursor:pointer;
+      font-size:18px;line-height:1;padding:0 4px;margin-left:8px;
+    }
     main{max-width:1100px;margin:0 auto;padding:16px}
     .card{
       background:var(--card);
@@ -294,6 +305,11 @@
 </head>
 
 <body>
+<div id="updateBanner">
+  🔔 È disponibile una nuova versione di PostiClasse.
+  <a href="https://github.com/loretrango/PostiClasse-SeatingPlanner" target="_blank" rel="noopener">Scarica l'aggiornamento</a>
+  <button onclick="this.parentElement.style.display='none'" aria-label="Chiudi">×</button>
+</div>
 <header>
   <div>
     <div class="title">PostiClasse — SeatingPlanner <span style="font-weight:400;font-size:13px;color:var(--muted)">Disposizione automatica dei posti in classe con vincoli</span></div>
@@ -454,6 +470,22 @@
 </main>
 
 <script>
+const VERSION = "1.0";
+
+(async () => {
+  try {
+    const r = await fetch(
+      "https://raw.githubusercontent.com/loretrango/PostiClasse-SeatingPlanner/main/version.txt",
+      { cache: "no-store" }
+    );
+    if (!r.ok) return;
+    const latest = (await r.text()).trim();
+    if (latest && latest !== VERSION) {
+      document.getElementById("updateBanner").style.display = "flex";
+    }
+  } catch (_) {}
+})();
+
 /** ===================== UTILITY ===================== **/
 const $ = (id) => document.getElementById(id);
 
