@@ -1,14 +1,11 @@
-# Disposizione posti in classe — v8
+# PostiClasse - SeatingPlanner
 
-Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
+-Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
 
-Ad esempio, è possibile definire un gruppo di alunni che non devono, per qualche motivo, stare vicini. In modo analogo, è possiblie definire che un alunno debba stare obbligatoriamente vicino ad alcuni alunni (potrebbe essere il caso di un alunno straniero, che deve essere affiancato ad alunni che parlano la sua stessa lingua).
+-Ad esempio, è possibile definire un gruppo di alunni che non devono, per qualche motivo, stare vicini. In modo analogo, è possiblie definire che un alunno debba stare obbligatoriamente vicino ad alcuni alunni (potrebbe essere il caso di un alunno straniero, che deve essere affiancato ad alunni che parlano la stessa lingua).
 
 Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 
-![Alt text](foto/image4.png)
-
-![Alt text](foto/infografica.png)
 ---
 
 ## Funzionalità principali
