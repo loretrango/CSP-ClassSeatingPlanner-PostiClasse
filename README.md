@@ -6,6 +6,9 @@
 
 Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 
+![Alt text](foto/image4.png)
+
+![Alt text](foto/infografica.png)
 ---
 
 ## Funzionalità principali
