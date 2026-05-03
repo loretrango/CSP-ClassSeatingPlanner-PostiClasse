@@ -46,22 +46,6 @@
       background:none;border:none;color:#fff;cursor:pointer;
       font-size:18px;line-height:1;padding:0 4px;margin-left:8px;
     }
-    #restoreBanner{
-      display:none;position:sticky;top:0;z-index:19;
-      background:#065f46;color:#fff;
-      padding:8px 16px;font-size:14px;
-      align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;
-    }
-    #restoreBanner .restoreAction{
-      background:#fff;color:#065f46;border:none;
-      padding:3px 10px;border-radius:6px;
-      font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;
-    }
-    #restoreBanner .restoreAction:hover{background:#d1fae5}
-    #restoreBanner .restoreClose{
-      background:none;border:none;color:#fff;cursor:pointer;
-      font-size:18px;line-height:1;padding:0 4px;margin-left:4px;
-    }
     main{max-width:1100px;margin:0 auto;padding:16px}
     .card{
       background:var(--card);
@@ -179,27 +163,6 @@
     }
     .vicRemove:hover{color:#9a3412}
 
-    .blocGroups{display:flex;flex-direction:column;gap:6px;min-height:24px}
-    .blocGroup{
-      display:flex;flex-wrap:wrap;gap:5px;align-items:center;
-      background:#eff6ff;border:1px solid #93c5fd;
-      border-radius:10px;padding:5px 10px;font-size:12px;
-    }
-    .blocGroupLabel{color:#1e3a8a;font-weight:700;white-space:nowrap;margin-right:2px}
-    .blocArrow{color:#3b82f6;margin-right:2px;flex:0 0 auto}
-    .blocPill{
-      display:inline-flex;align-items:center;gap:4px;
-      background:#dbeafe;border:1px solid #3b82f6;
-      border-radius:20px;padding:2px 7px 2px 9px;
-      font-size:12px;color:#1e40af;
-    }
-    .blocRemove{
-      background:none;border:none;color:#3b82f6;
-      cursor:pointer;font-size:15px;line-height:1;
-      padding:0 1px;display:flex;align-items:center;
-    }
-    .blocRemove:hover{color:#1e3a8a}
-
     .curGroupPills{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
     .curGroupPill{
       display:inline-flex;align-items:center;gap:4px;
@@ -293,29 +256,6 @@
     .cell.selected{outline:3px solid #ff0000}
     .cell.warn-anti{background:#fef2f2 !important;border-color:#dc2626 !important}
     .cell.warn-vic{background:#fff7ed !important;border-color:#f97316 !important}
-    .cell.warn-bloc{background:#eff6ff !important;border-color:#3b82f6 !important}
-    .cell.warn-rc{background:#fdf4ff !important;border-color:#9333ea !important}
-
-    .rcGroups{display:flex;flex-direction:column;gap:6px;min-height:24px}
-    .rcGroup{
-      display:flex;flex-wrap:wrap;gap:5px;align-items:center;
-      background:#faf5ff;border:1px solid #d8b4fe;
-      border-radius:10px;padding:5px 10px;font-size:12px;
-    }
-    .rcGroupLabel{color:#6b21a8;font-weight:700;white-space:nowrap;margin-right:2px}
-    .rcArrow{color:#7c3aed;margin-right:2px;flex:0 0 auto}
-    .rcPill{
-      display:inline-flex;align-items:center;gap:4px;
-      background:#ede9fe;border:1px solid #7c3aed;
-      border-radius:20px;padding:2px 7px 2px 9px;
-      font-size:12px;color:#4c1d95;
-    }
-    .rcRemove{
-      background:none;border:none;color:#7c3aed;
-      cursor:pointer;font-size:15px;line-height:1;
-      padding:0 1px;display:flex;align-items:center;
-    }
-    .rcRemove:hover{color:#4c1d95}
     .seatNo{
       position:absolute; top:6px; left:8px;
       font-size:11px; color:var(--muted); font-weight:400;
@@ -370,11 +310,6 @@
   <a href="https://github.com/loretrango/PostiClasse-SeatingPlanner" target="_blank" rel="noopener">Scarica l'aggiornamento</a>
   <button onclick="this.parentElement.style.display='none'" aria-label="Chiudi">×</button>
 </div>
-<div id="restoreBanner">
-  ✔ Sessione precedente ripristinata automaticamente.
-  <button class="restoreAction" id="btnClearStorage">Cancella dati salvati</button>
-  <button class="restoreClose" id="btnDismissRestore" aria-label="Chiudi">×</button>
-</div>
 <header>
   <div>
     <div class="title">PostiClasse — SeatingPlanner <span style="font-weight:400;font-size:13px;color:var(--muted)">Disposizione automatica dei posti in classe con vincoli</span></div>
@@ -413,42 +348,6 @@
             <button class="btn fit" id="btnAddVicinanza" style="background:var(--btn3);color:#111827;font-size:13px;padding:8px 12px">+ Aggiungi</button>
           </div>
           <div class="vicGroups" id="vicGroups"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div>
-        <label for="postiBloccati"><b>Posti fissi</b> <span class="hint">— es: 1:3 (studente 1 al posto 3); 5:7,8 (studente 5 al posto 7 oppure 8) — i numeri posto corrispondono ai numeri in alto a sinistra di ogni banco nell&rsquo;anteprima</span></label>
-        <textarea id="postiBloccati" style="min-height:60px"></textarea>
-        <div class="pairBuilder">
-          <div class="pairBuilderRow">
-            <select id="blocStudente"></select>
-            <span style="font-size:13px;color:var(--muted);flex:0 0 auto">al posto</span>
-            <select id="blocPosto"></select>
-            <button class="btn fit" id="btnAddBloc" style="background:#3b82f6;font-size:13px;padding:8px 12px">+ Aggiungi</button>
-          </div>
-          <div class="blocGroups" id="blocGroups"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div>
-        <label for="rigaColonna"><b>Vincoli di riga/colonna</b> <span class="hint">— R=riga del layout (1=prima), C=colonna del layout (1=sinistra) — es: 1:R1 (studente 1 in riga 1); 5:C2,C8 (studente 5 in colonna 2 o 8); 3:R2,R3 (studente 3 in riga 2 o 3). Se combinato con Posti fissi vale l&rsquo;intersezione.</span></label>
-        <textarea id="rigaColonna" style="min-height:60px"></textarea>
-        <div class="pairBuilder">
-          <div class="pairBuilderRow">
-            <select id="rcStudente"></select>
-            <span style="font-size:13px;color:var(--muted);flex:0 0 auto">deve essere nella</span>
-            <select id="rcTipo">
-              <option value="R">Riga</option>
-              <option value="C">Colonna</option>
-            </select>
-            <select id="rcNumero"></select>
-            <button class="btn fit" id="btnAddRC" style="background:#7c3aed;font-size:13px;padding:8px 12px">+ Aggiungi</button>
-          </div>
-          <div class="rcGroups" id="rcGroups"></div>
         </div>
       </div>
     </div>
@@ -571,7 +470,7 @@
 </main>
 
 <script>
-const VERSION = "1.1";
+const VERSION = "1.0";
 
 (async () => {
   try {
@@ -916,19 +815,8 @@ function workerMain() {
     return true;
   }
 
-  /* Verifica posti bloccati su array completo (indici 0-based) */
-  function checkPostiBloccati(posti, postiBloccati) {
-    for (const [sStr, allowedIdxs] of Object.entries(postiBloccati)) {
-      const s = parseInt(sStr, 10);
-      const seatIdx = posti.indexOf(s);
-      if (seatIdx === -1) continue;
-      if (!allowedIdxs.includes(seatIdx)) return false;
-    }
-    return true;
-  }
-
   self.onmessage = function(e) {
-    const { n, numPosti, antAdjPairs, antAdjByIndex, vicAdjByIndex, antipatie, vicinanze, postiBloccati, timeoutMs } = e.data;
+    const { n, numPosti, antAdjPairs, antAdjByIndex, vicAdjByIndex, antipatie, vicinanze, timeoutMs } = e.data;
     globalStart = Date.now();
 
     /* Lookup rapido antipatie */
@@ -966,8 +854,7 @@ function workerMain() {
       }
       shuffle(posti);
       if (checkAntipatie(posti, antAdjPairs, antiSet) &&
-          checkVicinanze(posti, vicAdjByIndex, vicinanze) &&
-          checkPostiBloccati(posti, postiBloccati)) {
+          checkVicinanze(posti, vicAdjByIndex, vicinanze)) {
         shuffleFound = true;
         break;
       }
@@ -1002,7 +889,6 @@ function workerMain() {
       for (const [, list] of Object.entries(vicinanze)) {
         if (list.includes(s)) w += 2;
       }
-      if (postiBloccati[String(s)] && postiBloccati[String(s)].length > 0) w += 15;
       weight.set(s, w);
     }
 
@@ -1051,15 +937,6 @@ function workerMain() {
         const emptySeats = [];
         for (let i = 0; i < numPosti; i++) {
           if (seats[i] === 0) emptySeats.push(i);
-        }
-
-        /* Filtra per posti bloccati */
-        const blocKey = String(student);
-        if (postiBloccati[blocKey] && postiBloccati[blocKey].length > 0) {
-          const allowedSet = new Set(postiBloccati[blocKey]);
-          const filtered = emptySeats.filter(s => allowedSet.has(s));
-          emptySeats.length = 0;
-          emptySeats.push(...filtered);
         }
 
         /* Preferisci posti adiacenti ai vicini richiesti */
@@ -1155,8 +1032,6 @@ let state = {
   studentNames: {},
   gruppi: [],
   vicinanze: {},
-  postiBloccati: {},
-  rigaColonna: {},
   selectedSeatIndex: null,
   violatedStudents: null,
   history: [],
@@ -1170,8 +1045,6 @@ function cloneState() {
     studentNames: JSON.parse(JSON.stringify(state.studentNames)),
     gruppi: JSON.parse(JSON.stringify(state.gruppi)),
     vicinanze: JSON.parse(JSON.stringify(state.vicinanze)),
-    postiBloccati: JSON.parse(JSON.stringify(state.postiBloccati || {})),
-    rigaColonna: JSON.parse(JSON.stringify(state.rigaColonna || {})),
     optRows: $("optRows").checked,
     optCorridor: $("optCorridor").checked
   };
@@ -1199,8 +1072,6 @@ function applySnapshot(snap) {
   state.studentNames = JSON.parse(JSON.stringify(snap.studentNames));
   state.gruppi = JSON.parse(JSON.stringify(snap.gruppi || []));
   state.vicinanze = JSON.parse(JSON.stringify(snap.vicinanze));
-  state.postiBloccati = JSON.parse(JSON.stringify(snap.postiBloccati || {}));
-  state.rigaColonna = JSON.parse(JSON.stringify(snap.rigaColonna || {}));
   state.selectedSeatIndex = null;
 
   $("optRows").checked = !!snap.optRows;
@@ -1209,8 +1080,6 @@ function applySnapshot(snap) {
   $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
   drawPreview();
   validateCurrentArrangement();
-  renderBlocGroups();
-  renderRCGroups();
   updateHistoryButtons();
 }
 
@@ -1252,8 +1121,6 @@ function drawPreview() {
       if (s !== 0 && state.violatedStudents) {
         if (state.violatedStudents.anti.has(s)) cell.classList.add("warn-anti");
         else if (state.violatedStudents.vic.has(s)) cell.classList.add("warn-vic");
-        else if (state.violatedStudents.bloc && state.violatedStudents.bloc.has(s)) cell.classList.add("warn-bloc");
-        else if (state.violatedStudents.rc && state.violatedStudents.rc.has(s)) cell.classList.add("warn-rc");
       }
 
       const n = document.createElement("div");
@@ -1304,7 +1171,6 @@ function onSeatClick(seatIndex) {
   $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
   drawPreview();
   validateCurrentArrangement();
-  saveToStorage();
 }
 
 /** ===================== VALIDAZIONE ===================== **/
@@ -1340,43 +1206,6 @@ function getUnsatisfiedVicinanze(posti, adjacencyByIndex, vicinanzeObb) {
   return violations;
 }
 
-function getViolatedBloccati(posti, postiBloccatiObj) {
-  const violations = [];
-  for (const [sStr, allowedSeats] of Object.entries(postiBloccatiObj)) {
-    const s = parseInt(sStr, 10);
-    const seatIdx = posti.indexOf(s);
-    if (seatIdx === -1) continue;
-    if (!allowedSeats.includes(seatIdx + 1)) {
-      violations.push({ s, allowedSeats });
-    }
-  }
-  return violations;
-}
-
-function getViolatedRigaColonna(posti, layoutRows, rigaColonna) {
-  const seatPositions = [];
-  for (let r = 0; r < layoutRows.length; r++) {
-    for (let c = 0; c < layoutRows[r].length; c++) {
-      if (layoutRows[r][c] === "1") {
-        seatPositions.push({ row: r + 1, col: c + 1 });
-      }
-    }
-  }
-  const violations = [];
-  for (const [sStr, specs] of Object.entries(rigaColonna)) {
-    const s = parseInt(sStr, 10);
-    const seatIdx = posti.indexOf(s);
-    if (seatIdx === -1) continue;
-    if (seatIdx >= seatPositions.length) continue;
-    const { row, col } = seatPositions[seatIdx];
-    const ok = specs.some(({ type, num }) =>
-      (type === "R" && row === num) || (type === "C" && col === num)
-    );
-    if (!ok) violations.push({ s, specs });
-  }
-  return violations;
-}
-
 function validateCurrentArrangement() {
   const status = $("status");
   const details = $("statusDetails");
@@ -1393,15 +1222,13 @@ function validateCurrentArrangement() {
 
   const antViolations = getViolatedAntipatie(state.posti, ant.adjacencyPairs, expandGruppiToPairs(state.gruppi));
   const vicViolations = getUnsatisfiedVicinanze(state.posti, vic.adjacencyByIndex, state.vicinanze);
-  const blocViolations = getViolatedBloccati(state.posti, state.postiBloccati || {});
-  const rcViolations = getViolatedRigaColonna(state.posti, state.layoutRows, state.rigaColonna || {});
 
   const optInfo =
     `Coppie non permesse: ${optRows ? "riga + file/diagonali" : "solo riga"}; ` +
     `corridoio come vicino: ${optCorridor ? "S\u00CC (1-c-1)" : "NO"}. ` +
     `Vicinanze obbligatorie: SOLO orizzontali (corridoio separa).`;
 
-  if (antViolations.length === 0 && vicViolations.length === 0 && blocViolations.length === 0 && rcViolations.length === 0) {
+  if (antViolations.length === 0 && vicViolations.length === 0) {
     state.violatedStudents = null;
     status.textContent = "\u2714 Disposizione valida: vincoli rispettati";
     status.classList.add("ok");
@@ -1411,11 +1238,7 @@ function validateCurrentArrangement() {
     for (const [s1, s2] of antViolations) { antiStudents.add(s1); antiStudents.add(s2); }
     const vicStudents = new Set();
     for (const { s } of vicViolations) vicStudents.add(s);
-    const blocStudents = new Set();
-    for (const { s } of blocViolations) blocStudents.add(s);
-    const rcStudents = new Set();
-    for (const { s } of rcViolations) rcStudents.add(s);
-    state.violatedStudents = { anti: antiStudents, vic: vicStudents, bloc: blocStudents, rc: rcStudents };
+    state.violatedStudents = { anti: antiStudents, vic: vicStudents };
 
     const lines = [];
     if (antViolations.length > 0) {
@@ -1430,21 +1253,6 @@ function validateCurrentArrangement() {
       for (const { s, vicini } of vicViolations) {
         const vList = vicini.map(nameOf).join(", ");
         lines.push(`&nbsp;&nbsp;\u2022 ${nameOf(s)} deve stare vicino ad almeno uno tra: ${vList}`);
-      }
-    }
-    if (blocViolations.length > 0) {
-      if (lines.length > 0) lines.push("");
-      lines.push("<b>Posti fissi non rispettati:</b>");
-      for (const { s, allowedSeats } of blocViolations) {
-        lines.push(`&nbsp;&nbsp;\u2022 ${nameOf(s)} deve essere al posto ${allowedSeats.join(" o ")}`);
-      }
-    }
-    if (rcViolations.length > 0) {
-      if (lines.length > 0) lines.push("");
-      lines.push("<b>Vincoli di riga/colonna non rispettati:</b>");
-      for (const { s, specs } of rcViolations) {
-        const specList = specs.map(({ type, num }) => type === "R" ? `riga ${num}` : `colonna ${num}`).join(", ");
-        lines.push(`&nbsp;&nbsp;\u2022 ${nameOf(s)} deve essere in: ${specList}`);
       }
     }
     status.textContent = "\u26A0 Disposizione non valida";
@@ -1487,29 +1295,10 @@ function generaClick() {
     const gruppi = parseGruppi($("gruppiNonAmmessi").value);
     const allAntipatie = expandGruppiToPairs(gruppi);
     const vicinanze = parseVicinanze($("vicinanze").value);
-    const postiBloccatiRaw = parsePostiBloccati($("postiBloccati").value);
-    const rcRaw = parseRigaColonna($("rigaColonna").value);
     const layoutRows = parseLayout($("layout").value);
     const names = parseStudentList($("lista").value);
     const optRows = $("optRows").checked;
     const optCorridor = $("optCorridor").checked;
-
-    /* Converti posti fissi da 1-indexed (UI) a 0-indexed (worker) */
-    const postiBloccatiIdx = {};
-    for (const [sStr, posti] of Object.entries(postiBloccatiRaw)) {
-      postiBloccatiIdx[sStr] = posti.map(p => p - 1);
-    }
-
-    /* Merge vincoli riga/colonna in postiBloccatiIdx (intersezione se entrambi presenti) */
-    const rcIdx = rigaColonnaToSeatIndices(rcRaw, layoutRows);
-    for (const [sStr, rcSeats] of Object.entries(rcIdx)) {
-      if (postiBloccatiIdx[sStr] !== undefined) {
-        const existing = new Set(postiBloccatiIdx[sStr]);
-        postiBloccatiIdx[sStr] = rcSeats.filter(s => existing.has(s));
-      } else {
-        postiBloccatiIdx[sStr] = rcSeats;
-      }
-    }
 
     const { errors, warnings } = validateConstraints(n, allAntipatie, vicinanze);
     if (errors.length) throw new Error(errors.join("\n"));
@@ -1553,8 +1342,6 @@ function generaClick() {
         state.studentNames = names;
         state.gruppi = gruppi;
         state.vicinanze = vicinanze;
-        state.postiBloccati = postiBloccatiRaw;
-        state.rigaColonna = rcRaw;
         state.selectedSeatIndex = null;
 
         $("output").textContent = timedOut
@@ -1572,15 +1359,12 @@ function generaClick() {
       state.studentNames = names;
       state.gruppi = gruppi;
       state.vicinanze = vicinanze;
-      state.postiBloccati = postiBloccatiRaw;
-      state.rigaColonna = rcRaw;
       state.selectedSeatIndex = null;
 
       $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(posti, layoutRows);
       drawPreview();
       validateCurrentArrangement();
       pushHistory();
-      saveToStorage();
     };
 
     worker.onerror = function(err) {
@@ -1598,7 +1382,6 @@ function generaClick() {
       vicAdjByIndex: vic.adjacencyByIndex,
       antipatie: allAntipatie,
       vicinanze,
-      postiBloccati: postiBloccatiIdx,
       timeoutMs: 15000
     });
 
@@ -1613,8 +1396,6 @@ function exportAll() {
     const nStr = String(getN() || "").trim();
     const gruppiStr = String($("gruppiNonAmmessi").value || "").trim();
     const vic = String($("vicinanze").value || "").trim();
-    const bloc = String($("postiBloccati").value || "").trim();
-    const rc = String($("rigaColonna").value || "").trim();
     const lay = String($("layout").value || "").trim();
     const lista = String($("lista").value || "").trim();
 
@@ -1642,12 +1423,6 @@ ${gruppiStr}
 
 Vicinanze obbligatorie:
 ${vic}
-
-Posti fissi:
-${bloc}
-
-Vincoli di riga/colonna:
-${rc}
 
 Layout dei banchi:
 ${lay}
@@ -1703,8 +1478,6 @@ function importFromText(txt) {
     "Coppie non permesse:",
     "Gruppi non ammessi:",
     "Vicinanze obbligatorie:",
-    "Posti fissi:",
-    "Vincoli di riga/colonna:",
     "Layout dei banchi:",
     "Lista alunni:",
     "Opzioni (solo coppie non ammesse):",
@@ -1718,8 +1491,6 @@ function importFromText(txt) {
   const legacyPairsBlock = readBlock("Coppie non permesse:", labels);
   let gruppiBlock = readBlock("Gruppi non ammessi:", labels);
   const vicBlock = readBlock("Vicinanze obbligatorie:", labels);
-  const blocBlock = readBlock("Posti fissi:", labels);
-  const rcBlock = readBlock("Vincoli di riga/colonna:", labels);
   const layoutBlock = readBlock("Layout dei banchi:", labels);
   const listaBlock = readBlock("Lista alunni:", labels);
   const optBlock = readBlock("Opzioni (solo coppie non ammesse):", labels)
@@ -1744,8 +1515,6 @@ function importFromText(txt) {
   else { $("nStudents").value = nVal; }
   $("gruppiNonAmmessi").value = gruppiBlock;
   $("vicinanze").value = vicBlock;
-  $("postiBloccati").value = blocBlock;
-  $("rigaColonna").value = rcBlock;
   $("layout").value = layoutBlock;
 
   if (optBlock) {
@@ -1780,8 +1549,6 @@ function importFromText(txt) {
       state.studentNames = parseStudentList(listaBlock);
       state.gruppi = parseGruppi(gruppiBlock);
       state.vicinanze = parseVicinanze(vicBlock);
-      state.postiBloccati = parsePostiBloccati(blocBlock);
-      state.rigaColonna = parseRigaColonna(rcBlock);
       state.selectedSeatIndex = null;
 
       $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
@@ -1789,10 +1556,6 @@ function importFromText(txt) {
       validateCurrentArrangement();
       renderSavedGroups();
       renderVicGroups();
-      renderBlocGroups();
-      rebuildBloccoSelects();
-      renderRCGroups();
-      rebuildRCSelects();
 
       state.history = [];
       state.historyIndex = -1;
@@ -1855,10 +1618,6 @@ function updateNField() {
 const debouncedRebuildPairs = debounce(() => {
   rebuildVicinanzaSelects();
   renderVicGroups();
-  rebuildBloccoSelects();
-  renderBlocGroups();
-  rebuildRCSelects();
-  renderRCGroups();
   rebuildGruppoCheckList();
   renderSavedGroups();
   renderCurrentGroupPills();
@@ -1970,313 +1729,6 @@ function removeVicinanzaNeighbor(s, v) {
 
   $("vicinanze").value = vicinanzaToText(vicinanze);
   renderVicGroups();
-}
-
-/** ===================== POSTI BLOCCATI BUILDER ===================== **/
-function parsePostiBloccati(text) {
-  text = (text || "").trim();
-  if (!text) return {};
-  const groups = text.split(/[\n;]/).map(s => s.trim()).filter(Boolean);
-  const out = {};
-  for (const g of groups) {
-    if (!g.includes(":")) throw new Error(`Formato non valido per posto fisso: '${g}' (usa es. 1:3)`);
-    const [sStr, listStr] = g.split(":");
-    const s = parseInt(sStr.trim(), 10);
-    if (!Number.isInteger(s)) throw new Error(`Studente non valido in posto fisso: '${g}'`);
-    const posti = listStr.split(",").map(x => x.trim()).filter(Boolean).map(x => parseInt(x, 10));
-    if (posti.some(v => !Number.isInteger(v))) throw new Error(`Lista posti non valida in: '${g}'`);
-    if (posti.length === 0) throw new Error(`Nessun posto valido per lo studente ${s} in '${g}'`);
-    out[s] = posti;
-  }
-  return out;
-}
-
-function postiBloccatiToText(pb) {
-  return Object.entries(pb)
-    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
-    .map(([k, list]) => `${k}:${list.join(",")}`)
-    .join("\n");
-}
-
-/** ===================== RIGA/COLONNA ===================== **/
-function parseRigaColonna(text) {
-  text = (text || "").trim();
-  if (!text) return {};
-  const out = {};
-  for (const line of text.split(/[\n;]/)) {
-    const t = line.trim();
-    if (!t) continue;
-    if (!t.includes(":")) throw new Error(`Formato non valido: '${t}' (usa es. 1:R2 o 5:C3)`);
-    const [sStr, listStr] = t.split(":");
-    const s = parseInt(sStr.trim(), 10);
-    if (!Number.isInteger(s) || isNaN(s)) throw new Error(`Studente non valido: '${t}'`);
-    const specs = listStr.split(",").map(x => x.trim()).filter(Boolean);
-    const parsed = [];
-    for (const spec of specs) {
-      const m = spec.match(/^([RC])(\d+)$/i);
-      if (!m) throw new Error(`Specifica non valida '${spec}' in '${t}' (usa R2 per riga 2, C3 per colonna 3)`);
-      parsed.push({ type: m[1].toUpperCase(), num: parseInt(m[2], 10) });
-    }
-    if (parsed.length === 0) throw new Error(`Nessuna specifica valida per lo studente ${s} in '${t}'`);
-    out[s] = (out[s] || []).concat(parsed);
-  }
-  return out;
-}
-
-function rigaColonnaToText(rc) {
-  return Object.entries(rc)
-    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
-    .map(([k, specs]) => `${k}:${specs.map(({ type, num }) => `${type}${num}`).join(",")}`)
-    .join("\n");
-}
-
-function rigaColonnaToSeatIndices(rigaColonna, layoutRows) {
-  const seatPositions = [];
-  for (let r = 0; r < layoutRows.length; r++) {
-    for (let c = 0; c < layoutRows[r].length; c++) {
-      if (layoutRows[r][c] === "1") {
-        seatPositions.push({ row: r + 1, col: c + 1 });
-      }
-    }
-  }
-  const out = {};
-  for (const [sStr, specs] of Object.entries(rigaColonna)) {
-    const allowed = new Set();
-    for (const { type, num } of specs) {
-      for (let i = 0; i < seatPositions.length; i++) {
-        const { row, col } = seatPositions[i];
-        if (type === "R" && row === num) allowed.add(i);
-        if (type === "C" && col === num) allowed.add(i);
-      }
-    }
-    out[sStr] = [...allowed];
-  }
-  return out;
-}
-
-function rebuildBloccoSelects() {
-  const n = getN() || 0;
-  let names = {};
-  try { names = parseStudentList($("lista").value); } catch (e) {}
-  let numPosti = 0;
-  try {
-    const lr = parseLayout($("layout").value);
-    numPosti = lr.reduce((acc, r) => acc + [...r].filter(ch => ch === "1").length, 0);
-  } catch (e) {}
-
-  const selS = $("blocStudente");
-  const selP = $("blocPosto");
-  const prevS = selS.value, prevP = selP.value;
-
-  selS.innerHTML = "";
-  selP.innerHTML = "";
-
-  for (let i = 1; i <= n; i++) {
-    selS.appendChild(new Option(studentLabel(i, names), i));
-  }
-  for (let i = 1; i <= numPosti; i++) {
-    selP.appendChild(new Option(`Posto ${i}`, i));
-  }
-
-  if (prevS && selS.querySelector(`option[value="${prevS}"]`)) selS.value = prevS;
-  if (prevP && selP.querySelector(`option[value="${prevP}"]`)) selP.value = prevP;
-  else if (numPosti >= 1) selP.value = "1";
-}
-
-function renderBlocGroups() {
-  let pb = {};
-  try { pb = parsePostiBloccati($("postiBloccati").value); } catch (e) {}
-  let names = {};
-  try { names = parseStudentList($("lista").value); } catch (e) {}
-
-  const container = $("blocGroups");
-  container.innerHTML = "";
-
-  for (const [sStr, posti] of Object.entries(pb).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))) {
-    const s = parseInt(sStr, 10);
-    const group = document.createElement("div");
-    group.className = "blocGroup";
-
-    const lbl = document.createElement("span");
-    lbl.className = "blocGroupLabel";
-    lbl.textContent = studentLabel(s, names);
-    group.appendChild(lbl);
-
-    const arrow = document.createElement("span");
-    arrow.className = "blocArrow";
-    arrow.textContent = "→";
-    group.appendChild(arrow);
-
-    for (const p of posti) {
-      const pill = document.createElement("span");
-      pill.className = "blocPill";
-      const txt = document.createTextNode(`Posto ${p} `);
-      const btn = document.createElement("button");
-      btn.className = "blocRemove";
-      btn.title = "Rimuovi";
-      btn.textContent = "×";
-      btn.dataset.s = s;
-      btn.dataset.p = p;
-      pill.appendChild(txt);
-      pill.appendChild(btn);
-      group.appendChild(pill);
-    }
-
-    container.appendChild(group);
-  }
-}
-
-function addBlocco() {
-  const s = parseInt($("blocStudente").value, 10);
-  const p = parseInt($("blocPosto").value, 10);
-  if (!s || !p) return;
-
-  let pb = {};
-  try { pb = parsePostiBloccati($("postiBloccati").value); } catch (e) {}
-
-  const key = String(s);
-  if (!pb[key]) pb[key] = [];
-  if (pb[key].includes(p)) { alert("Questo posto fisso è già presente."); return; }
-  pb[key].push(p);
-
-  $("postiBloccati").value = postiBloccatiToText(pb);
-  renderBlocGroups();
-}
-
-function removeBlocco(s, p) {
-  let pb = {};
-  try { pb = parsePostiBloccati($("postiBloccati").value); } catch (e) {}
-
-  const key = String(s);
-  if (!pb[key]) return;
-  pb[key] = pb[key].filter(x => x !== p);
-  if (pb[key].length === 0) delete pb[key];
-
-  $("postiBloccati").value = postiBloccatiToText(pb);
-  renderBlocGroups();
-}
-
-/** ===================== RIGA/COLONNA BUILDER ===================== **/
-function rebuildRCSelects() {
-  const n = getN() || 0;
-  let names = {};
-  try { names = parseStudentList($("lista").value); } catch (e) {}
-
-  const selS = $("rcStudente");
-  const prevS = selS.value;
-  selS.innerHTML = "";
-  for (let i = 1; i <= n; i++) {
-    selS.appendChild(new Option(studentLabel(i, names), i));
-  }
-  if (prevS && selS.querySelector(`option[value="${prevS}"]`)) selS.value = prevS;
-
-  rebuildRCNumeroSelect();
-}
-
-function rebuildRCNumeroSelect() {
-  const tipo = $("rcTipo").value;
-  const selN = $("rcNumero");
-  const prevN = selN.value;
-  selN.innerHTML = "";
-
-  let layoutRows = null;
-  try { layoutRows = parseLayout($("layout").value); } catch (e) {}
-  if (!layoutRows) return;
-
-  if (tipo === "R") {
-    for (let r = 1; r <= layoutRows.length; r++) {
-      if ([...layoutRows[r - 1]].some(ch => ch === "1")) {
-        selN.appendChild(new Option(`Riga ${r}`, r));
-      }
-    }
-  } else {
-    const numCols = layoutRows[0].length;
-    for (let c = 1; c <= numCols; c++) {
-      if (layoutRows.some(row => row[c - 1] === "1")) {
-        selN.appendChild(new Option(`Colonna ${c}`, c));
-      }
-    }
-  }
-
-  if (prevN && selN.querySelector(`option[value="${prevN}"]`)) selN.value = prevN;
-}
-
-function renderRCGroups() {
-  let rc = {};
-  try { rc = parseRigaColonna($("rigaColonna").value); } catch (e) {}
-  let names = {};
-  try { names = parseStudentList($("lista").value); } catch (e) {}
-
-  const container = $("rcGroups");
-  container.innerHTML = "";
-
-  for (const [sStr, specs] of Object.entries(rc).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))) {
-    const s = parseInt(sStr, 10);
-    const group = document.createElement("div");
-    group.className = "rcGroup";
-
-    const lbl = document.createElement("span");
-    lbl.className = "rcGroupLabel";
-    lbl.textContent = studentLabel(s, names);
-    group.appendChild(lbl);
-
-    const arrow = document.createElement("span");
-    arrow.className = "rcArrow";
-    arrow.textContent = "→";
-    group.appendChild(arrow);
-
-    for (const { type, num } of specs) {
-      const pill = document.createElement("span");
-      pill.className = "rcPill";
-      const labelTxt = type === "R" ? `Riga ${num}` : `Col. ${num}`;
-      const txt = document.createTextNode(labelTxt + " ");
-      const btn = document.createElement("button");
-      btn.className = "rcRemove";
-      btn.title = "Rimuovi";
-      btn.textContent = "×";
-      btn.dataset.s = s;
-      btn.dataset.t = type;
-      btn.dataset.n = num;
-      pill.appendChild(txt);
-      pill.appendChild(btn);
-      group.appendChild(pill);
-    }
-
-    container.appendChild(group);
-  }
-}
-
-function addRC() {
-  const s = parseInt($("rcStudente").value, 10);
-  const tipo = $("rcTipo").value;
-  const num = parseInt($("rcNumero").value, 10);
-  if (!s || !tipo || !num) return;
-
-  let rc = {};
-  try { rc = parseRigaColonna($("rigaColonna").value); } catch (e) {}
-
-  const key = String(s);
-  if (!rc[key]) rc[key] = [];
-  if (rc[key].some(sp => sp.type === tipo && sp.num === num)) {
-    alert("Questo vincolo è già presente."); return;
-  }
-  rc[key].push({ type: tipo, num });
-
-  $("rigaColonna").value = rigaColonnaToText(rc);
-  renderRCGroups();
-}
-
-function removeRC(s, type, num) {
-  let rc = {};
-  try { rc = parseRigaColonna($("rigaColonna").value); } catch (e) {}
-
-  const key = String(s);
-  if (!rc[key]) return;
-  rc[key] = rc[key].filter(sp => !(sp.type === type && sp.num === num));
-  if (rc[key].length === 0) delete rc[key];
-
-  $("rigaColonna").value = rigaColonnaToText(rc);
-  renderRCGroups();
 }
 
 /** ===================== GRUPPO BUILDER ===================== **/
@@ -2454,87 +1906,6 @@ function removeGruppo(idx) {
   debouncedValidate();
 }
 
-/** ===================== AUTOSALVATAGGIO ===================== **/
-const STORAGE_KEY = "PostiClasse_autosave_v1";
-
-function saveToStorage() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      nStudents: $("nStudents").value,
-      vicinanze: $("vicinanze").value,
-      postiBloccati: $("postiBloccati").value,
-      rigaColonna: $("rigaColonna").value,
-      gruppiNonAmmessi: $("gruppiNonAmmessi").value,
-      layout: $("layout").value,
-      lista: $("lista").value,
-      optNames: $("optNames").checked,
-      optRows: $("optRows").checked,
-      optCorridor: $("optCorridor").checked,
-      posti: state.posti ? [...state.posti] : null,
-    }));
-  } catch (e) {}
-}
-
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-
-    $("lista").value = data.lista || "";
-    updateNField();
-    if (!$("nStudents").disabled) $("nStudents").value = data.nStudents || "";
-    $("vicinanze").value = data.vicinanze || "";
-    $("postiBloccati").value = data.postiBloccati || "";
-    $("rigaColonna").value = data.rigaColonna || "";
-    $("gruppiNonAmmessi").value = data.gruppiNonAmmessi || "";
-    $("layout").value = data.layout || "";
-    $("optNames").checked = !!data.optNames;
-    $("optRows").checked = data.optRows !== false;
-    $("optCorridor").checked = !!data.optCorridor;
-
-    rebuildVicinanzaSelects();
-    renderVicGroups();
-    rebuildBloccoSelects();
-    renderBlocGroups();
-    rebuildRCSelects();
-    renderRCGroups();
-    rebuildGruppoCheckList();
-    renderSavedGroups();
-
-    if (data.posti && data.layout) {
-      try {
-        const layoutRows = parseLayout(data.layout);
-        const expected = layoutRows.reduce((acc, r) => acc + [...r].filter(ch => ch === "1").length, 0);
-        if (data.posti.length >= expected) {
-          state.layoutRows = layoutRows;
-          state.posti = data.posti.slice(0, expected);
-          state.studentNames = parseStudentList(data.lista || "");
-          state.gruppi = parseGruppi(data.gruppiNonAmmessi || "");
-          state.vicinanze = parseVicinanze(data.vicinanze || "");
-          state.postiBloccati = parsePostiBloccati(data.postiBloccati || "");
-          state.rigaColonna = parseRigaColonna(data.rigaColonna || "");
-          state.selectedSeatIndex = null;
-          $("output").textContent = "Disposizione dei posti (0=vuoto):\n\n" + formatDisposizione(state.posti, state.layoutRows);
-          drawPreview();
-          validateCurrentArrangement();
-          pushHistory();
-        }
-      } catch (e) {}
-    }
-
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function clearStorage() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-}
-
-const debouncedSave = debounce(saveToStorage, 800);
-
 /** ===================== EVENTI UI ===================== **/
 function exportPdf() {
   const now = new Date();
@@ -2588,36 +1959,10 @@ $("vicGroups").addEventListener("click", (e) => {
 
 $("vicinanze").addEventListener("input", () => { renderVicGroups(); debouncedValidate(); });
 
-$("btnAddBloc").addEventListener("click", addBlocco);
-
-$("blocGroups").addEventListener("click", (e) => {
-  const btn = e.target.closest(".blocRemove");
-  if (!btn) return;
-  removeBlocco(parseInt(btn.dataset.s, 10), parseInt(btn.dataset.p, 10));
-  debouncedValidate();
-});
-
-$("postiBloccati").addEventListener("input", () => { renderBlocGroups(); debouncedValidate(); });
-$("layout").addEventListener("input", () => { rebuildBloccoSelects(); rebuildRCNumeroSelect(); });
-
-$("rcTipo").addEventListener("change", rebuildRCNumeroSelect);
-$("btnAddRC").addEventListener("click", addRC);
-$("rcGroups").addEventListener("click", (e) => {
-  const btn = e.target.closest(".rcRemove");
-  if (!btn) return;
-  removeRC(parseInt(btn.dataset.s, 10), btn.dataset.t, parseInt(btn.dataset.n, 10));
-  debouncedValidate();
-});
-$("rigaColonna").addEventListener("input", () => { renderRCGroups(); debouncedValidate(); });
-
 /* Init */
 updateNField();
 rebuildVicinanzaSelects();
 renderVicGroups();
-rebuildBloccoSelects();
-renderBlocGroups();
-rebuildRCSelects();
-renderRCGroups();
 
 $("btnAddToGroup").addEventListener("click", addToCurrentGroup);
 $("btnSaveGroup").addEventListener("click", saveCurrentGroup);
@@ -2650,25 +1995,7 @@ $("fileImport").addEventListener("change", async (ev) => {
   const txt = await file.text();
   importFromText(txt);
   ev.target.value = "";
-  saveToStorage();
 });
-
-/* Autosalvataggio: qualsiasi input/change nel pannello principale */
-document.querySelector("main").addEventListener("input", debouncedSave);
-document.querySelector("main").addEventListener("change", debouncedSave);
-
-$("btnClearStorage").addEventListener("click", () => {
-  clearStorage();
-  location.reload();
-});
-$("btnDismissRestore").addEventListener("click", () => {
-  $("restoreBanner").style.display = "none";
-});
-
-/* Ripristino sessione precedente */
-if (loadFromStorage()) {
-  $("restoreBanner").style.display = "flex";
-}
 
 
 </script>
