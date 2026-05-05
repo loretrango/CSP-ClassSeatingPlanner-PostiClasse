@@ -6,9 +6,6 @@
 
 Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 
-![Alt text](foto/image4.png)
-
-![Alt text](foto/infografica.png)
 ---
 
 ## Funzionalità principali
@@ -16,6 +13,8 @@ Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 - **Generazione automatica** con algoritmo ibrido (shuffle casuale + backtracking)
 - **Gruppi non ammessi** — definisce insiemi di alunni che non possono stare vicini tra loro; le coppie vietate vengono generate automaticamente da ogni gruppo
 - **Vicinanze obbligatorie** — forza un alunno a sedersi accanto ad almeno uno dei compagni indicati
+- **Posti fissi** — vincola un alunno a uno o più posti specifici (identificati dal numero in alto a sinistra del banco nell'anteprima)
+- **Vincoli di riga/colonna** — vincola un alunno a una o più righe o colonne del layout; combinabile con i posti fissi (vale l'intersezione)
 - **Layout banchi personalizzabile** — griglia con celle assegnabili (`1`), non assegnabili (`0`) e corridoi (`c`)
 - **Lista alunni** opzionale con nomi visualizzati in anteprima e nei builder
 - **Scambio manuale** — click su due banchi nell'anteprima per scambiare gli alunni
@@ -74,6 +73,8 @@ Aprire `postiClasse.html` direttamente nel browser (nessun server necessario).
 | **Numero di alunni** | Intero positivo | `25` |
 | **Gruppi non ammessi** | `A,B,C` — un gruppo per riga | `1,3,5` |
 | **Vicinanze obbligatorie** | `A:B,C` — A deve stare vicino ad almeno uno tra B e C | `1:3,6` |
+| **Posti fissi** | `A:N` — A deve sedersi al posto N; più posti con virgola | `1:3` oppure `5:7,8` |
+| **Vincoli riga/colonna** | `A:RN` o `A:CN` — A in riga o colonna N; più valori con virgola | `1:R1` oppure `5:C2,C8` |
 | **Layout banchi** | Righe di `1`, `0`, `c` (separate da newline o `;`) | vedi sotto |
 | **Lista alunni** | `numero[TAB]Nome Cognome` per riga | `1	Mario Rossi` |
 
@@ -136,7 +137,39 @@ Ogni riga del campo testuale ha il formato `A:B,C,...` — lo studente A deve tr
 
 ---
 
-### 5. Opzioni di controllo
+### 5. Posti fissi
+
+Ogni riga del campo testuale ha il formato `A:N` — lo studente A deve sedersi al posto N. Per indicare più posti alternativi separare con la virgola: `5:7,8` significa che lo studente 5 può stare al posto 7 oppure al posto 8.
+
+I numeri di posto corrispondono al numero visualizzato in alto a sinistra di ogni banco nell'anteprima.
+
+#### Builder visuale
+
+- Seleziona lo **studente** e il **posto** dal menu a tendina, poi **+ Aggiungi**
+- I vincoli salvati mostrano, per ogni studente, i posti accettabili come pillole blu rimuovibili con **×**
+
+> I banchi con posti fissi non rispettati vengono evidenziati in **blu** nell'anteprima.
+
+---
+
+### 6. Vincoli di riga/colonna
+
+Ogni riga del campo testuale ha il formato `A:RN` (riga N) o `A:CN` (colonna N). Le righe sono numerate dall'alto (R1 = prima fila), le colonne da sinistra (C1 = prima colonna). Si possono indicare più valori alternativi con la virgola: `5:C2,C8` significa che lo studente 5 può essere nella colonna 2 o nella colonna 8.
+
+**Combinazione con Posti fissi:** se lo stesso studente ha sia un vincolo di riga/colonna che un posto fisso, vengono considerati solo i posti che rispettano entrambi (intersezione).
+
+**Esempio:** `3:R2,R3` — lo studente 3 deve trovarsi in seconda o terza fila.
+
+#### Builder visuale
+
+- Seleziona lo **studente**, il tipo (**Riga** o **Colonna**) e il **numero**, poi **+ Aggiungi**
+- I vincoli salvati mostrano, per ogni studente, le posizioni accettabili come pillole viola rimuovibili con **×**
+
+> I banchi con vincoli di riga/colonna non rispettati vengono evidenziati in **viola** nell'anteprima.
+
+---
+
+### 7. Opzioni di controllo
 
 - **Mostra nomi in anteprima** — mostra nome e numero nelle celle dell'anteprima
 - **Controlla anche tra file** — i gruppi non ammessi vengono verificati anche tra banchi davanti/dietro/diagonali (oltre che nella stessa fila)
@@ -144,7 +177,7 @@ Ogni riga del campo testuale ha il formato `A:B,C,...` — lo studente A deve tr
 
 ---
 
-### 6. Generare la disposizione
+### 8. Generare la disposizione
 
 Premere **Genera disposizione**. Durante la ricerca è visibile un contatore di progresso.
 
@@ -152,16 +185,16 @@ Se i vincoli sono stringenti il motore passa automaticamente da shuffle casuale 
 
 ---
 
-### 7. Interagire con l'anteprima
+### 9. Interagire con l'anteprima
 
 - **Click su un banco** → lo seleziona (bordo rosso)
 - **Click su un secondo banco** → scambia i due alunni
 - Lo stato dei vincoli si aggiorna automaticamente dopo ogni scambio
-- Banchi con vincoli violati evidenziati in **rosso** (gruppi non ammessi) o **arancione** (vicinanze obbligatorie)
+- Banchi con vincoli violati evidenziati in **rosso** (gruppi non ammessi), **arancione** (vicinanze obbligatorie), **blu** (posti fissi) o **viola** (vincoli riga/colonna)
 
 ---
 
-### 8. Esportare e importare
+### 10. Esportare e importare
 
 - **Esporta (testo)** → scarica `disposizione_classe.txt` con tutti gli input e la disposizione
 - **Importa…** → ricarica un file esportato in precedenza, ripristinando input e disposizione
@@ -196,6 +229,8 @@ Timeout: **15 secondi** totali. Se non si trova una soluzione viene mostrato un 
 - Builder visuale per le vicinanze obbligatorie
 - Fix bug parser: `parseVicinanze` gestiva correttamente solo il separatore `;`, ignorando le righe separate da newline
 - Compatibilità import file vecchi (coppie → gruppi da 2)
+- **Posti fissi** — vincolo per assegnare un alunno a uno o più banchi specifici (con builder visuale e highlight blu)
+- **Vincoli di riga/colonna** — vincolo per limitare un alunno a determinate righe o colonne del layout (con builder visuale e highlight viola); combinabile con i posti fissi per intersezione
 
 ---
 
