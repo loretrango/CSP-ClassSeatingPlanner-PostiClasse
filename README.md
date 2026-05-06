@@ -15,7 +15,7 @@ Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
 - **Vicinanze obbligatorie** — forza un alunno a sedersi accanto ad almeno uno dei compagni indicati
 - **Posti fissi** — vincola un alunno a uno o più posti specifici (identificati dal numero in alto a sinistra del banco nell'anteprima)
 - **Vincoli di riga/colonna** — vincola un alunno a una o più righe o colonne del layout; combinabile con i posti fissi (vale l'intersezione)
-- **Layout banchi personalizzabile** — griglia con celle assegnabili (`1`), non assegnabili (`0`) e corridoi (`c`)
+- **Layout banchi personalizzabile** — griglia con celle assegnabili (`1`), non assegnabili (`0`) e corridoi (`c`), con editor visuale click-to-toggle e pulsanti per aggiungere/rimuovere righe e colonne
 - **Lista alunni** opzionale con nomi visualizzati in anteprima e nei builder
 - **Scambio manuale** — click su due banchi nell'anteprima per scambiare gli alunni
 - **Navigazione cronologia** — pulsanti Precedente / Successiva per tornare alle disposizioni precedenti
@@ -93,6 +93,16 @@ Esempio — 3 file, 2 corridoi verticali:
 ```
 
 > Tutte le righe devono avere lo stesso numero di caratteri.
+
+#### Editor visuale del layout
+
+Sotto la textarea del layout è disponibile un editor click-to-toggle sincronizzato bidirezionalmente:
+
+- Ogni cella mostra il tipo corrente (`1`, `0`, `c`) con colori distinti — **verde** per i banchi assegnabili, **grigio** per i non assegnabili, **viola tratteggiato** per i corridoi
+- **Click su una cella** — cicla tra i tre tipi: `1 → c → 0 → 1`
+- **+ Riga / − Riga** — aggiunge o rimuove l'ultima riga
+- **+ Col / − Col** — aggiunge o rimuove l'ultima colonna (su tutte le righe)
+- Modificare la textarea aggiorna immediatamente la griglia visuale; modificare la griglia aggiorna immediatamente la textarea
 
 ---
 
@@ -231,6 +241,7 @@ Timeout: **15 secondi** totali. Se non si trova una soluzione viene mostrato un 
 - Compatibilità import file vecchi (coppie → gruppi da 2)
 - **Posti fissi** — vincolo per assegnare un alunno a uno o più banchi specifici (con builder visuale e highlight blu)
 - **Vincoli di riga/colonna** — vincolo per limitare un alunno a determinate righe o colonne del layout (con builder visuale e highlight viola); combinabile con i posti fissi per intersezione
+- **Editor visuale layout** — griglia click-to-toggle con pulsanti per aggiungere/rimuovere righe e colonne, sincronizzata in tempo reale con la textarea
 
 ---
 
