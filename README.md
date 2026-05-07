@@ -1,6 +1,6 @@
 # PostiClasse - SeatingPlanner  [*Lorenzo Antiga*]
 
-[📥 Scarica PostiClasse](https://github.com/loretrango/PostiClasse-SeatingPlanner/raw/main/postiClasse.html)
+[📥 Scarica PostiClasse](https://github.com/loretrango/PostiClasse-SeatingPlanner/raw/main/download.html)
 
 -Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
 
