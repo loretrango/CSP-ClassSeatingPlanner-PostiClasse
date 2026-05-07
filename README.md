@@ -2,10 +2,12 @@
 
 -Applicazione web (single-file HTML) per generare automaticamente la disposizione degli alunni in aula rispettando vincoli di separazione e vicinanza.
 
--E' possibile definire un gruppo di alunni che non devono, per qualche motivo, stare vicini.
--E' possiblie definire che un alunno debba stare obbligatoriamente vicino ad alcuni alunni (potrebbe essere il caso di un alunno straniero, che deve essere affiancato ad alunni che parlano la stessa lingua).
-
 Autore: **Lorenzo Antiga** — lorenzo.antiga@gmail.com
+
+E' possibile definire:
+- gruppi di alunni che non devono stare vicini.
+- alunni che devono stare vicini ad altri alunni (potrebbe essere il caso di un alunno straniero, che deve essere affiancato ad alunni che parlano la stessa lingua).
+- fissare alunni su posti, righe o colonne specifiche. 
 
 ---
 
