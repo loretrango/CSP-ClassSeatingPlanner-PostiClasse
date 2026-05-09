@@ -392,7 +392,7 @@
 </div>
 <header>
   <div>
-    <div class="title">PostiClasse — SeatingPlanner <span style="font-weight:400;font-size:13px;color:var(--muted)">Disposizione automatica dei posti in classe con vincoli</span></div>
+    <div class="title">PostiClasse — SeatingPlanner <span id="versionBadge" style="font-weight:400;font-size:13px;color:var(--muted)"></span> <span style="font-weight:400;font-size:13px;color:var(--muted)">Disposizione automatica dei posti in classe con vincoli</span></div>
     <div class="sub">
       Autore: <b>Lorenzo Antiga</b> —
       <a href="mailto:lorenzo.antiga@gmail.com">&lt;lorenzo.antiga@gmail.com&gt;</a>
@@ -602,6 +602,8 @@
 
 <script>
 const VERSION = "1.2";
+
+document.getElementById("versionBadge").textContent = "v" + VERSION;
 
 (async () => {
   try {
