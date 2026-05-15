@@ -12,6 +12,17 @@ E' possibile definire:
 - fissare alunni su posti, righe o colonne specifiche. 
 
 ---
+## Algoritmo
+
+La generazione avviene in un **Web Worker** separato (non blocca il browser) in due fasi:
+
+1. **Shuffle casuale** — mescola gli studenti e verifica i vincoli; veloce per vincoli laschi (fino a 500.000 tentativi o 60% del timeout)
+2. **Backtracking con random restart** — esplora sistematicamente le assegnazioni; gli studenti con più vincoli vengono piazzati per primi; include forward checking per le vicinanze obbligatorie
+
+Timeout: **15 secondi** totali. Se non si trova una soluzione viene mostrato un messaggio con suggerimenti per allentare i vincoli.
+
+---
+
 
 ## Funzionalità principali
 
@@ -217,36 +228,19 @@ Se i vincoli sono stringenti il motore passa automaticamente da shuffle casuale 
 
 ---
 
-## Algoritmo
 
-La generazione avviene in un **Web Worker** separato (non blocca il browser) in due fasi:
-
-1. **Shuffle casuale** — mescola gli studenti e verifica i vincoli; veloce per vincoli laschi (fino a 500.000 tentativi o 60% del timeout)
-2. **Backtracking con random restart** — esplora sistematicamente le assegnazioni; gli studenti con più vincoli vengono piazzati per primi; include forward checking per le vicinanze obbligatorie
-
-Timeout: **15 secondi** totali. Se non si trova una soluzione viene mostrato un messaggio con suggerimenti per allentare i vincoli.
 
 ---
 
 ## Versioni
 
-| File | Descrizione |
-|---|---|
-| `postiClasse_02.html` | Prima versione web con layout 1/0/c |
-| `postiClasse_03.html` | Aggiunta anteprima cliccabile e opzioni tra file / corridoio |
-| `postiClasse_04.html` | UI minimale, export/import testo |
-| `postiClasse_05.html` | Checkbox riorganizzate, textarea antipatie su righe separate |
-| `postiClasse_06.html` | Motore ibrido shuffle + backtracking in Web Worker |
-| `postiClasse.html` | Versione attuale (vedi sotto) |
+| Versione | Data | Descrizione |
+|---|---|---|
+| **1.2** | 2026-05-06 | Editor visuale del layout (griglia click-to-toggle, + Riga / − Riga / + Col / − Col) |
+| **1.1** | 2026-05-03 | Posti fissi, vincoli riga/colonna, ripristino automatico sessione da localStorage |
+| **1.0** | 2026-04-28 | Prima versione numerata: controllo aggiornamenti, costante `VERSION` |
 
-**`postiClasse.html`** è la versione attiva e aggiornata. Rispetto alla v6 aggiunge:
-- Gruppi non ammessi con builder visuale a checkbox (sostituisce "coppie non permesse")
-- Builder visuale per le vicinanze obbligatorie
-- Fix bug parser: `parseVicinanze` gestiva correttamente solo il separatore `;`, ignorando le righe separate da newline
-- Compatibilità import file vecchi (coppie → gruppi da 2)
-- **Posti fissi** — vincolo per assegnare un alunno a uno o più banchi specifici (con builder visuale e highlight blu)
-- **Vincoli di riga/colonna** — vincolo per limitare un alunno a determinate righe o colonne del layout (con builder visuale e highlight viola); combinabile con i posti fissi per intersezione
-- **Editor visuale layout** — griglia click-to-toggle con pulsanti per aggiungere/rimuovere righe e colonne, sincronizzata in tempo reale con la textarea
+Per il dettaglio delle modifiche vedere [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
