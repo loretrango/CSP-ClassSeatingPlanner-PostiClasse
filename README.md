@@ -62,17 +62,7 @@ wget https://raw.githubusercontent.com/loretrango/PostiClasse-SeatingPlanner/mai
 git clone https://github.com/loretrango/PostiClasse-SeatingPlanner.git
 ```
 
-### Avviare l'applicazione
-
-Dopo aver scaricato il file:
-
-- **Windows**: doppio clic su `postiClasse.html` → si apre nel browser predefinito
-- **macOS**: doppio clic su `postiClasse.html` → si apre in Safari (o browser predefinito)
-- **Linux**: `xdg-open postiClasse.html` oppure trascina il file nel browser
-
 Non è necessario installare nulla, avviare un server o avere una connessione internet.
-
-> **Nota**: se il browser chiede conferma per eseguire script locali (raro), concedi il permesso oppure usa Firefox che non pone questa restrizione.
 
 ---
 
